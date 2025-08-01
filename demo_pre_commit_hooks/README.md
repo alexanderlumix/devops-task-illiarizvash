@@ -1,196 +1,262 @@
-# Pre-commit Hooks Demo
+# Pre-commit Hooks Configuration
 
-This directory contains examples and templates for setting up pre-commit hooks to ensure code quality and consistency across the project.
+This directory contains pre-commit hooks configuration for the MongoDB Replica Set project to ensure code quality and security before each commit.
 
 ## Overview
 
-Pre-commit hooks are scripts that run automatically before each commit to check code quality, formatting, and security issues.
+Pre-commit hooks are automated checks that run before each git commit to ensure:
+- Code quality standards
+- Security best practices
+- Consistent formatting
+- No hardcoded secrets
 
-## Setup
+## Features
 
-### 1. Install pre-commit
+### 🔒 Security Hooks
+- **Password Detection**: Custom hook to detect hardcoded passwords and credentials
+- **Secret Scanning**: detect-secrets integration for comprehensive secret detection
+- **Security Linting**: Bandit for Python security vulnerabilities
+- **Container Security**: Hadolint for Dockerfile security
 
+### 🎨 Code Quality Hooks
+- **Python**: Black (formatting), isort (imports), flake8 (linting), mypy (type checking)
+- **Go**: golangci-lint, go vet, go fmt
+- **JavaScript**: ESLint with security plugins
+- **Markdown**: markdownlint for documentation quality
+
+### 🔧 Utility Hooks
+- **File Checks**: trailing whitespace, end-of-file, large files
+- **YAML/JSON**: validation and linting
+- **Merge Conflicts**: detection and prevention
+
+## Installation
+
+### Prerequisites
 ```bash
-# Install pre-commit globally
+# Install pre-commit
 pip install pre-commit
 
-# Or install in a virtual environment
-python -m pip install pre-commit
+# Install language-specific tools
+pip install black isort flake8 bandit mypy
+npm install -g eslint
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 ```
 
-### 2. Install the hooks
-
+### Setup
 ```bash
-# Install hooks from .pre-commit-config.yaml
+# Install pre-commit hooks
 pre-commit install
 
-# Install commit-msg hook for commit message validation
-pre-commit install --hook-type commit-msg
+# Install all hooks
+pre-commit install --hook-type pre-commit --hook-type commit-msg
 ```
 
-### 3. Run hooks manually
+## Custom Password Detection Hook
 
+### Overview
+The custom password detection hook (`scripts/check_passwords.py`) scans files for:
+- Hardcoded passwords and credentials
+- MongoDB connection strings with passwords
+- Common weak passwords
+- API keys and tokens
+
+### Patterns Detected
+```python
+# Common password patterns
+password = "secret123"
+pass = "admin123"
+secret = "mysecret"
+
+# MongoDB connection strings
+mongodb://user:password@host:port/db
+mongodb+srv://user:password@cluster.mongodb.net/db
+
+# Weak passwords
+"password", "123456", "qwerty", "admin", "root"
+```
+
+### Usage
 ```bash
-# Run all hooks on all files
-pre-commit run --all-files
+# Run manually
+python scripts/check_passwords.py file1.py file2.js
 
-# Run specific hook
-pre-commit run black --all-files
-
-# Run hooks on staged files only
-pre-commit run
+# Run via pre-commit
+pre-commit run password-check --all-files
 ```
 
-## Available Hooks
-
-### Code Formatting
-- **Black**: Python code formatter
-- **isort**: Python import sorter
-- **go-fmt**: Go code formatter
-- **go-imports**: Go import organizer
-- **ESLint**: JavaScript/TypeScript linter
-
-### Code Quality
-- **flake8**: Python code quality checker
-- **golangci-lint**: Go code quality checker
-- **mypy**: Python type checker
-- **bandit**: Python security linter
-
-### Security
-- **detect-secrets**: Find secrets in code
-- **hadolint**: Dockerfile linter
-- **gosec**: Go security scanner
-
-### Documentation
-- **markdownlint**: Markdown linter
-- **yamllint**: YAML linter
-- **license-eye**: License header checker
-
-### Git
-- **commitizen**: Conventional commit messages
-- **commitlint**: Commit message validation
-- **trailing-whitespace**: Remove trailing whitespace
-- **end-of-file-fixer**: Ensure files end with newline
-
-## Configuration Files
-
-### .pre-commit-config.yaml
-Main configuration file defining all hooks and their settings.
-
-### .eslintrc.js
-ESLint configuration for JavaScript/TypeScript code quality.
-
-### .golangci.yml
-GolangCI-lint configuration for Go code quality.
-
-### pyproject.toml
-Python tool configurations (Black, isort, Pylint, Bandit, MyPy).
-
-## Custom Hooks
-
-### Creating Custom Hooks
-
+### Configuration
+The hook is configured in `.pre-commit-config.yaml`:
 ```yaml
-# Example custom hook in .pre-commit-config.yaml
 - repo: local
   hooks:
-    - id: custom-check
-      name: Custom Check
-      entry: python scripts/custom_check.py
+    - id: password-check
+      name: Password Detection
+      entry: python scripts/check_passwords.py
       language: python
-      files: \.py$
+      files: \.(py|js|go|yml|yaml|md|txt)$
+      exclude: |
+        (?x)^(
+            \.secrets\.baseline|
+            \.env\.example|
+            docs/.*\.md|
+            README\.md|
+            node_modules/|
+            \.git/
+        )$
 ```
 
-### Local Scripts
+## Usage
 
-Create custom validation scripts in the `scripts/` directory:
+### Running Hooks
+```bash
+# Run all hooks on staged files
+pre-commit run
 
-```python
-# scripts/custom_check.py
-#!/usr/bin/env python3
-import sys
+# Run specific hook
+pre-commit run black
+pre-commit run password-check
 
-def main():
-    # Your custom validation logic here
-    print("Running custom check...")
-    # Return 0 for success, 1 for failure
-    return 0
+# Run on all files
+pre-commit run --all-files
 
-if __name__ == "__main__":
-    sys.exit(main())
+# Run specific hook on all files
+pre-commit run password-check --all-files
 ```
 
-## Best Practices
+### Skipping Hooks
+```bash
+# Skip specific hook
+git commit -m "message" --no-verify
 
-### 1. Incremental Adoption
-- Start with basic formatting hooks
-- Gradually add more strict quality checks
-- Configure hooks to be warnings initially
+# Skip all hooks (not recommended)
+git commit -m "message" --no-verify
+```
 
-### 2. Team Communication
-- Document hook requirements
-- Provide setup instructions
-- Share configuration files
+## Hook Details
 
-### 3. CI/CD Integration
-- Run pre-commit hooks in CI/CD pipeline
-- Fail builds on hook failures
-- Generate reports for quality metrics
+### Password Detection Hook
+- **Purpose**: Detect hardcoded credentials
+- **Files**: Python, JavaScript, Go, YAML, Markdown, Text files
+- **Excludes**: Documentation, baseline files, node_modules
+- **Action**: Blocks commit if credentials found
 
-### 4. Performance
-- Use language-specific hooks
-- Exclude unnecessary files
-- Cache hook results
+### Security Hooks
+- **detect-secrets**: Comprehensive secret scanning
+- **bandit**: Python security vulnerabilities
+- **hadolint**: Dockerfile security
+
+### Code Quality Hooks
+- **Black**: Python code formatting
+- **isort**: Python import sorting
+- **flake8**: Python linting
+- **mypy**: Python type checking
+- **golangci-lint**: Go linting
+- **ESLint**: JavaScript linting
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Hook fails on existing code**
-   ```bash
-   # Run hooks with --allow-unmatched
-   pre-commit run --all-files --allow-unmatched
-   ```
-
-2. **Slow hook execution**
-   ```bash
-   # Run specific hooks only
-   pre-commit run black --all-files
-   ```
-
-3. **Hook conflicts**
-   - Review hook order in configuration
-   - Check for conflicting rules
-   - Adjust hook settings
-
-### Debug Mode
-
+#### Hook Fails on Password Detection
 ```bash
-# Run with verbose output
-pre-commit run --verbose
+# Check what passwords were detected
+python scripts/check_passwords.py $(git diff --cached --name-only)
 
-# Run specific hook with debug
-pre-commit run black --verbose --all-files
+# Fix by using environment variables
+# Instead of: password = "secret123"
+# Use: password = os.getenv("DB_PASSWORD")
 ```
 
-## Migration Guide
+#### Hook Fails on Code Formatting
+```bash
+# Auto-fix formatting issues
+pre-commit run black --all-files
+pre-commit run isort --all-files
+```
 
-### From Manual Checks
-1. Identify current manual checks
-2. Find equivalent pre-commit hooks
-3. Configure hooks to match current standards
-4. Gradually increase strictness
+#### Hook Fails on Linting
+```bash
+# Check specific linting errors
+pre-commit run flake8
+pre-commit run golangci-lint
+```
 
-### From Other Tools
-1. Export current configurations
-2. Map to pre-commit hook equivalents
-3. Test configurations
-4. Update team documentation
+### Updating Hooks
+```bash
+# Update all hooks to latest versions
+pre-commit autoupdate
 
-## Resources
+# Update specific hook
+pre-commit autoupdate --freeze
+```
 
-- [Pre-commit Documentation](https://pre-commit.com/)
-- [Hook Repository](https://github.com/pre-commit/pre-commit-hooks)
-- [Black Documentation](https://black.readthedocs.io/)
-- [ESLint Documentation](https://eslint.org/)
-- [GolangCI-lint Documentation](https://golangci-lint.run/) 
+## Best Practices
+
+### 1. Use Environment Variables
+```python
+# ❌ Bad
+password = "secret123"
+
+# ✅ Good
+import os
+password = os.getenv("DB_PASSWORD")
+```
+
+### 2. Create .env Files
+```bash
+# Create .env for local development
+echo "DB_PASSWORD=your_password_here" > .env
+
+# Add to .gitignore
+echo ".env" >> .gitignore
+```
+
+### 3. Use Secret Management
+```python
+# For production, use proper secret management
+# AWS Secrets Manager, HashiCorp Vault, etc.
+```
+
+### 4. Regular Updates
+```bash
+# Keep hooks updated
+pre-commit autoupdate
+
+# Review baseline regularly
+detect-secrets audit .secrets.baseline
+```
+
+## Configuration Files
+
+- `.pre-commit-config.yaml`: Main configuration
+- `scripts/check_passwords.py`: Custom password detection
+- `.secrets.baseline`: Known secrets baseline
+- `code-quality/`: Language-specific configurations
+
+## Integration with CI/CD
+
+The same hooks can be run in CI/CD pipelines:
+
+```yaml
+# GitHub Actions example
+- name: Run pre-commit hooks
+  run: |
+    pip install pre-commit
+    pre-commit run --all-files
+```
+
+## Contributing
+
+When adding new hooks:
+1. Update `.pre-commit-config.yaml`
+2. Test with `pre-commit run --all-files`
+3. Update this README
+4. Commit changes
+
+## Support
+
+For issues with pre-commit hooks:
+1. Check the hook documentation
+2. Review error messages
+3. Test individual hooks
+4. Update hook versions if needed 

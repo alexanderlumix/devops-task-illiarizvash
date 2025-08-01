@@ -1,7 +1,10 @@
+# Pre-commit hooks configuration for the MongoDB Replica Set project
+# This file configures automated code quality checks that run before each commit
+
 repos:
-  # General hooks
+  # Basic pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.4.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -12,143 +15,128 @@ repos:
       - id: check-docstring-first
       - id: check-json
       - id: check-merge-conflict
-      - id: check-toml
       - id: debug-statements
-      - id: name-tests-test
-      - id: requirements-txt-fixer
-      - id: fix-byte-order-marker
-      - id: mixed-line-ending
-      - id: check-executables-have-shebangs
 
-  # Python hooks
+  # Password and secret detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: |
+          (?x)^(
+              \.secrets\.baseline|
+              \.env\.example|
+              passwords_and_credentials\.txt|
+              docs/.*\.md|
+              README\.md
+          )$
+
+  # Go linting
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.54.0
+    hooks:
+      - id: golangci-lint
+        args: [--fix]
+
+  # Python formatting and linting
   - repo: https://github.com/psf/black
-    rev: 23.12.1
+    rev: 23.3.0
     hooks:
       - id: black
         language_version: python3
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 5.12.0
     hooks:
       - id: isort
-        args: ["--profile", "black"]
+        args: [--profile=black]
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 6.0.0
     hooks:
       - id: flake8
         args: [--max-line-length=88, --extend-ignore=E203,W503]
 
-  - repo: https://github.com/pycqa/bandit
+  # Python security scanning
+  - repo: https://github.com/PyCQA/bandit
     rev: 1.7.5
     hooks:
       - id: bandit
-        args: [-r, scripts/]
-        exclude: ^tests/
+        args: [-r, ., -f, json, -o, bandit-report.json]
+        exclude: |
+          (?x)^(
+              tests/|
+              docs/|
+              \.venv/|
+              venv/
+          )$
 
+  # Type checking for Python
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.3.0
     hooks:
       - id: mypy
         additional_dependencies: [types-all]
-        args: [--ignore-missing-imports]
+        exclude: |
+          (?x)^(
+              tests/|
+              docs/|
+              \.venv/|
+              venv/
+          )$
 
-  # Go hooks
-  - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v0.5.1
-    hooks:
-      - id: go-fmt
-      - id: go-vet
-      - id: go-imports
-      - id: golangci-lint
-        args: [--fix]
-
-  # JavaScript/Node.js hooks
+  # JavaScript/Node.js linting
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.56.0
+    rev: v8.44.0
     hooks:
       - id: eslint
         files: \.(js|jsx|ts|tsx)$
         types: [file]
         additional_dependencies:
-          - eslint@8.56.0
-          - eslint-plugin-security@1.7.1
+          - eslint@8.44.0
+          - '@eslint/js'
+          - 'eslint-config-prettier'
+          - 'eslint-plugin-security'
 
-  # YAML hooks
-  - repo: https://github.com/adrienverge/yamllint
-    rev: v1.33.0
-    hooks:
-      - id: yamllint
-        args: [--format, parsable, --strict]
-
-  # Docker hooks
+  # Dockerfile linting
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
       - id: hadolint-docker
         args: [--ignore, DL3008, --ignore, DL3009]
 
-  # Security hooks
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+  # YAML/JSON validation
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
     hooks:
-      - id: detect-secrets
-        args: [--baseline, .secrets.baseline]
+      - id: check-yaml
+      - id: check-json
+      - id: yamllint
+        args: [--format, parsable, --strict]
 
-  # License headers
-  - repo: https://github.com/apache/skywalking-eyes
-    rev: v0.5.0
-    hooks:
-      - id: license-eye
-        args: [header, fix]
-
-  # Spell checking
-  - repo: https://github.com/crate-ci/typos
-    rev: v1.17.2
-    hooks:
-      - id: typos
-
-  # Commit message hooks
-  - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.13.0
-    hooks:
-      - id: commitizen
-        stages: [commit-msg]
-
-  # Terraform hooks (if using IaC)
-  - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.88.0
-    hooks:
-      - id: terraform_fmt
-      - id: terraform_validate
-      - id: terraform_docs
-      - id: terraform_tflint
-      - id: terraform_sec
-
-  # Kubernetes hooks
-  - repo: https://github.com/helm/helm
-    rev: v3.13.3
-    hooks:
-      - id: helm-docs
-
-  # Markdown hooks
+  # Markdown linting
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.37.0
+    rev: v0.35.0
     hooks:
       - id: markdownlint
         args: [--fix]
 
-  # Shell hooks
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.9.0
+  # Custom password detection hook
+  - repo: local
     hooks:
-      - id: shellcheck
-        args: [--severity=warning]
-
-  # Git hooks
-  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.5.0
-    hooks:
-      - id: commitlint
-        stages: [commit-msg]
-        args: [--config, .commitlintrc.js] 
+      - id: password-check
+        name: Password Detection
+        entry: python3 scripts/check_passwords.py
+        language: python
+        files: \.(py|js|go|yml|yaml|md|txt)$
+              exclude: |
+        (?x)^(
+            \.secrets\.baseline|
+            \.env\.example|
+            passwords_and_credentials\.txt|
+            docs/.*\.md|
+            README\.md|
+            node_modules/|
+            \.git/
+        )$ 

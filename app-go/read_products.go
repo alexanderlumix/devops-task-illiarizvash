@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,10 +15,39 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// MongoDB connection URI with replica set configuration
-const (
-	uri = "mongodb://appuser:appuserpassword@127.0.0.1:27034/appdb?replicaSet=rs0"
-)
+// getMongoURI constructs MongoDB connection URI from environment variables
+func getMongoURI() string {
+	user := os.Getenv("MONGO_USER")
+	password := os.Getenv("MONGO_PASSWORD")
+	host := os.Getenv("MONGO_HOST")
+	port := os.Getenv("MONGO_PORT")
+	db := os.Getenv("MONGO_DB")
+	replicaSet := os.Getenv("MONGO_REPLICA_SET")
+
+	if user == "" {
+		user = "appuser"
+	}
+	if password == "" {
+		password = os.Getenv("DEFAULT_APP_PASSWORD")
+		if password == "" {
+			log.Fatal("MONGO_PASSWORD or DEFAULT_APP_PASSWORD environment variable must be set")
+		}
+	}
+	if host == "" {
+		host = "127.0.0.1"
+	}
+	if port == "" {
+		port = "27034"
+	}
+	if db == "" {
+		db = "appdb"
+	}
+	if replicaSet == "" {
+		replicaSet = "rs0"
+	}
+
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?replicaSet=%s", user, password, host, port, db, replicaSet)
+}
 
 // Product represents a product document in MongoDB
 type Product struct {
@@ -55,7 +86,21 @@ func printProducts(client *mongo.Client) {
 	fmt.Println("---")
 }
 
+// healthHandler provides health check endpoint
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":    "healthy",
+		"service":   "go-app",
+		"timestamp": time.Now().Format(time.RFC3339),
+	})
+}
+
 func main() {
+	// Get MongoDB URI from environment variables
+	uri := getMongoURI()
+	
 	// Connect to MongoDB with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -64,6 +109,15 @@ func main() {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
 	defer client.Disconnect(ctx)
+	
+	// Start HTTP server for health checks
+	go func() {
+		http.HandleFunc("/health", healthHandler)
+		log.Println("Starting health check server on :8080")
+		if err := http.ListenAndServe(":8080", nil); err != nil {
+			log.Printf("Health check server error: %v", err)
+		}
+	}()
 	
 	// Continuously poll and display products every 3 seconds
 	for {

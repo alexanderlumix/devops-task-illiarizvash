@@ -1,17 +1,24 @@
 # MongoDB Application User Creation Script
 # This script creates a dedicated user for the application with read/write permissions
+import os
 import pymongo
 
-# MongoDB connection parameters
-MONGO_HOST = '127.0.0.1'
-MONGO_PORT = 27031
-ADMIN_USER = 'mongo-1'
-ADMIN_PASS = 'mongo-1'
+# MongoDB connection parameters from environment variables
+MONGO_HOST = os.getenv('MONGO_HOST', '127.0.0.1')
+MONGO_PORT = int(os.getenv('MONGO_PORT', '27031'))
+ADMIN_USER = os.getenv('MONGO_ADMIN_USER', 'mongo-1')
+ADMIN_PASS = os.getenv('MONGO_ADMIN_PASSWORD')
+if not ADMIN_PASS:
+    print("ERROR: MONGO_ADMIN_PASSWORD environment variable must be set")
+    exit(1)
 
-# Application database and user configuration
-APP_DB = 'appdb'
-APP_USER = 'appuser'
-APP_PASS = 'appuserpassword'
+# Application database and user configuration from environment variables
+APP_DB = os.getenv('MONGO_DB', 'appdb')
+APP_USER = os.getenv('APP_DB_USER', 'appuser')
+APP_PASS = os.getenv('APP_DB_PASSWORD')
+if not APP_PASS:
+    print("ERROR: APP_DB_PASSWORD environment variable must be set")
+    exit(1)
 
 
 def create_app_user():

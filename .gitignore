@@ -1,5 +1,6 @@
 **node_modules/
 **.env
+**passwords_and_credentials.txt
 npm-debug.log
 .DS_Store
 *.local

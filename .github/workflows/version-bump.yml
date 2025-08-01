@@ -1,0 +1,181 @@
+name: Version Bump and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version type to bump'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - major
+        - minor
+        - patch
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Version Bump
+  version-bump:
+    name: Bump Version
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Bump Version
+        run: |
+          echo "Bumping version type: ${{ github.event.inputs.version_type }}"
+          ./scripts/bump-version.sh ${{ github.event.inputs.version_type }}
+
+      - name: Push Changes
+        run: |
+          git push origin HEAD:${{ github.ref }}
+          git push origin --tags
+
+  # Build and Release
+  build-and-release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    needs: version-bump
+    if: always() && (needs.version-bump.result == 'success' || github.event_name == 'push')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get Version
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Go Application
+        run: |
+          echo "Building Go application version ${{ steps.version.outputs.version }}"
+          docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-go:${{ steps.version.outputs.version }} ./app-go
+          docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-go:latest ./app-go
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-go:${{ steps.version.outputs.version }}
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-go:latest
+
+      - name: Build and Push Node.js Application
+        run: |
+          echo "Building Node.js application version ${{ steps.version.outputs.version }}"
+          docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-node:${{ steps.version.outputs.version }} ./app-node
+          docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-node:latest ./app-node
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-node:${{ steps.version.outputs.version }}
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-node:latest
+
+      - name: Create Release
+        if: github.event_name == 'push'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## Release ${{ steps.version.outputs.version }}
+            
+            ### Changes
+            - Fixed hardcoded credentials
+            - Added health checks
+            - Added environment variables support
+            - Created unified docker-compose.yml
+            
+            ### Docker Images
+            - `${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-go:${{ steps.version.outputs.version }}`
+            - `${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/app-node:${{ steps.version.outputs.version }}`
+          draft: false
+          prerelease: false
+
+  # Integration Test
+  integration-test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: build-and-release
+    if: always() && needs.build-and-release.result == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get Version
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Start Services
+        run: |
+          echo "Starting services with version ${{ steps.version.outputs.version }}"
+          docker-compose up -d
+
+      - name: Wait for Services
+        run: |
+          echo "Waiting for services to be ready..."
+          sleep 30
+
+      - name: Test Health Checks
+        run: |
+          echo "Testing health checks..."
+          # Test Go app health
+          curl -f http://localhost:8080/health || exit 1
+          # Test Node.js app health
+          curl -f http://localhost:3000/health || exit 1
+
+      - name: Test Database Connection
+        run: |
+          echo "Testing database connections..."
+          # Test MongoDB connection
+          docker exec mongo-0 mongosh --eval "db.adminCommand('ping')" || exit 1
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose down -v
+
+  # Notifications
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [build-and-release, integration-test]
+    if: always()
+    steps:
+      - name: Success Notification
+        if: success()
+        run: |
+          echo "🎉 RELEASE SUCCESSFUL!"
+          echo "Version: $(cat VERSION)"
+          echo "All tests passed"
+          echo "Docker images pushed successfully"
+
+      - name: Failure Notification
+        if: failure()
+        run: |
+          echo "❌ RELEASE FAILED!"
+          echo "Please check the logs above for details" 
