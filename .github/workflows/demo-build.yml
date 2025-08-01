@@ -2,7 +2,7 @@ name: Demo Build Pipeline
 
 on:
   push:
-    branches: [ main, dev, feature/*, bugfix/* ]
+    branches: [ feature/*, bugfix/* ]
   pull_request:
     branches: [ main, dev ]
   workflow_dispatch:
