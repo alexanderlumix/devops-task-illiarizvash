@@ -103,7 +103,6 @@ app.post('/products', [
   body('name')
     .isLength({ min: 1, max: 100 })
     .trim()
-    .escape()
     .withMessage('Product name must be between 1 and 100 characters'),
   body('price')
     .optional()
@@ -113,7 +112,6 @@ app.post('/products', [
     .optional()
     .isLength({ max: 500 })
     .trim()
-    .escape()
     .withMessage('Description must be less than 500 characters')
 ], (req, res) => {
   // Check for validation errors

@@ -74,8 +74,10 @@ services:
   app-go:
     build: ./app-go
     container_name: app-go
+    ports:
+      - "8080:8080"
     environment:
-      - MONGO_HOST=mongo-1
+      - MONGO_HOST=mongo-0
       - MONGO_PORT=27017
       - MONGO_DB=${MONGO_DB:-appdb}
       - MONGO_REPLICA_SET=${MONGO_REPLICA_SET:-rs0}
@@ -95,6 +97,8 @@ services:
   app-node:
     build: ./app-node
     container_name: app-node
+    ports:
+      - "3000:3000"
     environment:
       - MONGO_HOST=mongo-1
       - MONGO_PORT=27017
