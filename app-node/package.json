@@ -5,10 +5,26 @@
   "main": "create_product.js",
   "scripts": {
     "start": "node create_product.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "mongodb": "^5.7.0",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "winston": "^3.11.0",
+    "express-validator": "^7.0.1",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "*.js",
+      "!node_modules/**"
+    ]
   }
 }

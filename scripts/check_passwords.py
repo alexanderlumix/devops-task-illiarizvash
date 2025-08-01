@@ -109,6 +109,14 @@ def scan_file_for_passwords(filepath: str) -> List[Tuple[int, str, str]]:
                     if credential.startswith('{') and credential.endswith('}'):
                         continue
                     
+                    # Skip if it's a format string placeholder (like %s)
+                    if credential in ['%s', '%d', '%f', '%v']:
+                        continue
+                    
+                    # Skip if it's a template literal variable (like ${password})
+                    if credential.startswith('${') and credential.endswith('}'):
+                        continue
+                    
                     if line.strip().startswith('#'):
                         continue
                     
