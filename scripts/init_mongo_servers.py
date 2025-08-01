@@ -1,4 +1,5 @@
-# init_mongo_servers.py
+# MongoDB Replica Set Initialization Script
+# This script initializes a MongoDB replica set with three nodes
 import pymongo
 import yaml
 import sys
@@ -6,10 +7,12 @@ import sys
 CONFIG_FILE = 'mongo_servers.yml'
 
 def load_config(config_file):
+    """Load MongoDB server configuration from YAML file"""
     with open(config_file, 'r') as f:
         return yaml.safe_load(f)
 
 def test_connection(server):
+    """Test connection to a MongoDB server"""
     host = server['host']
     port = server.get('port', 27017)
     user = server['user']
@@ -25,6 +28,7 @@ def test_connection(server):
         client.close()
 
 def init_primary(server):
+    """Initialize replica set on the primary server"""
     host = server['host']
     port = server.get('port', 27017)
     user = server['user']
@@ -32,6 +36,8 @@ def init_primary(server):
     uri = f"mongodb://{user}:{password}@{host}:{port}/admin?directConnection=true"
     try:
         client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
+        
+        # Configure replica set with three members
         rs_config = {
             '_id': 'rs0',
             'members': [
@@ -52,9 +58,14 @@ def init_primary(server):
         client.close()
 
 def main():
+    """Main function to test connections and initialize replica set"""
     config = load_config(CONFIG_FILE)
+    
+    # Test connections to all servers
     for idx, server in enumerate(config['servers']):
         test_connection(server)
+    
+    # Initialize replica set on the first server (primary)
     init_primary(config['servers'][0])
 
 if __name__ == '__main__':

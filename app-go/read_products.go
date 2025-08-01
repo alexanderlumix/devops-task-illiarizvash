@@ -13,16 +13,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// MongoDB connection URI with replica set configuration
 const (
 	uri = "mongodb://appuser:appuserpassword@127.0.0.1:27034/appdb?replicaSet=rs0"
 )
 
+// Product represents a product document in MongoDB
 type Product struct {
 	ID        primitive.ObjectID `bson:"_id" json:"id"`
 	Name      string            `bson:"name" json:"name"`
 	CreatedAt time.Time         `bson:"createdAt" json:"createdAt"`
 }
 
+// printProducts retrieves and displays all products from the database
 func printProducts(client *mongo.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -53,6 +56,7 @@ func printProducts(client *mongo.Client) {
 }
 
 func main() {
+	// Connect to MongoDB with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
@@ -60,6 +64,8 @@ func main() {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
 	defer client.Disconnect(ctx)
+	
+	// Continuously poll and display products every 3 seconds
 	for {
 		printProducts(client)
 		time.Sleep(3 * time.Second)
