@@ -18,6 +18,25 @@ import (
 	"go.uber.org/zap"
 )
 
+// Global logger variable
+var logger *zap.Logger
+
+// safeLog safely logs messages if logger is initialized
+func safeLog(level string, msg string, fields ...zap.Field) {
+	if logger != nil {
+		switch level {
+		case "info":
+			logger.Info(msg, fields...)
+		case "warn":
+			logger.Warn(msg, fields...)
+		case "error":
+			logger.Error(msg, fields...)
+		case "fatal":
+			logger.Fatal(msg, fields...)
+		}
+	}
+}
+
 // Rate limiter structure
 type RateLimiter struct {
 	requests map[string][]time.Time
@@ -66,6 +85,8 @@ func (rl *RateLimiter) IsAllowed(ip string) bool {
 
 // getMongoURI constructs MongoDB connection URI from environment variables
 func getMongoURI() string {
+	user := os.Getenv("MONGO_USER")
+	password := os.Getenv("MONGO_PASSWORD")
 	host := os.Getenv("MONGO_HOST")
 	port := os.Getenv("MONGO_PORT")
 	db := os.Getenv("MONGO_DB")
@@ -84,9 +105,15 @@ func getMongoURI() string {
 		replicaSet = "rs0"
 	}
 
-	// Connect without authentication for development
-	uri := fmt.Sprintf("mongodb://%s:%s/%s?replicaSet=%s", host, port, db, replicaSet)
-	logger.Info("MongoDB URI constructed", 
+	// Construct URI with or without authentication
+	var uri string
+	if user != "" && password != "" {
+		uri = fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?replicaSet=%s", user, password, host, port, db, replicaSet)
+	} else {
+		uri = fmt.Sprintf("mongodb://%s:%s/%s?replicaSet=%s", host, port, db, replicaSet)
+	}
+	
+	safeLog("info", "MongoDB URI constructed", 
 		zap.String("host", host),
 		zap.String("port", port),
 		zap.String("database", db),
@@ -189,9 +216,11 @@ func rateLimitMiddleware(limiter *RateLimiter) func(http.HandlerFunc) http.Handl
 				logger.Warn("Rate limit exceeded", zap.String("ip", ip))
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusTooManyRequests)
-				json.NewEncoder(w).Encode(map[string]string{
+				if err := json.NewEncoder(w).Encode(map[string]string{
 					"error": "Rate limit exceeded. Please try again later.",
-				})
+				}); err != nil {
+					logger.Error("Error encoding response", zap.Error(err))
+				}
 				return
 			}
 
@@ -248,7 +277,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 		"timestamp": time.Now().Format(time.RFC3339),
 	}
 	
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		logger.Error("Error encoding health response", zap.Error(err))
+	}
 	logger.Info("Health check requested", 
 		zap.String("remote_addr", r.RemoteAddr),
 		zap.String("user_agent", r.UserAgent()))
@@ -283,10 +314,12 @@ func createProductHandler(client *mongo.Client) http.HandlerFunc {
 			
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			if err := json.NewEncoder(w).Encode(map[string]interface{}{
 				"error":  "Validation failed",
 				"errors": errors,
-			})
+			}); err != nil {
+				logger.Error("Error encoding validation response", zap.Error(err))
+			}
 			return
 		}
 
@@ -311,7 +344,7 @@ func createProductHandler(client *mongo.Client) http.HandlerFunc {
 		// Return success response
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		if err := json.NewEncoder(w).Encode(map[string]interface{}{
 			"message": "Product created successfully",
 			"productId": result.InsertedID,
 			"product": map[string]interface{}{
@@ -320,7 +353,9 @@ func createProductHandler(client *mongo.Client) http.HandlerFunc {
 				"description": req.Description,
 				"createdAt":   time.Now(),
 			},
-		})
+		}); err != nil {
+			logger.Error("Error encoding success response", zap.Error(err))
+		}
 
 		logger.Info("Product created successfully",
 			zap.String("product_name", req.Name),
@@ -335,7 +370,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			log.Printf("Error syncing logger: %v", err)
+		}
+	}()
 	
 	logger.Info("Starting Go application",
 		zap.String("version", "1.0.0"),
@@ -354,7 +393,11 @@ func main() {
 	if err != nil {
 		logger.Fatal("Failed to connect to MongoDB", zap.Error(err))
 	}
-	defer client.Disconnect(ctx)
+	defer func() {
+		if err := client.Disconnect(ctx); err != nil {
+			logger.Error("Error disconnecting from MongoDB", zap.Error(err))
+		}
+	}()
 	
 	// Test the connection
 	if err := client.Ping(ctx, nil); err != nil {

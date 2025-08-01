@@ -89,7 +89,9 @@ func (sm *SecretsManager) getProductionSecrets() (*MongoDBSecrets, error) {
 // getLocalSecrets retrieves secrets from local credentials file
 func (sm *SecretsManager) getLocalSecrets() (*MongoDBSecrets, error) {
 	if _, err := os.Stat(sm.credentialsPath); os.IsNotExist(err) {
-		sm.createLocalCredentialsFile()
+		if err := sm.createLocalCredentialsFile(); err != nil {
+			return nil, fmt.Errorf("failed to create local credentials file: %v", err)
+		}
 		return nil, fmt.Errorf("local credentials file not found. Please create %s based on env.credentials.example", sm.credentialsPath)
 	}
 
