@@ -1,7 +1,6 @@
 const { MongoClient } = require('mongodb');
 const express = require('express');
 const winston = require('winston');
-const { body, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
 
 // Configure structured logging
@@ -69,6 +68,9 @@ const PORT = process.env.PORT || 3000;
 // Apply rate limiting to all requests
 app.use(limiter);
 
+// Add JSON body parser
+app.use(express.json());
+
 // Add request logging middleware
 app.use((req, res, next) => {
   logger.info('HTTP request', {
@@ -99,37 +101,63 @@ app.get('/health', (req, res) => {
 });
 
 // Product creation endpoint with validation
-app.post('/products', [
-  body('name')
-    .isLength({ min: 1, max: 100 })
-    .trim()
-    .withMessage('Product name must be between 1 and 100 characters'),
-  body('price')
-    .optional()
-    .isNumeric()
-    .withMessage('Price must be a number'),
-  body('description')
-    .optional()
-    .isLength({ max: 500 })
-    .trim()
-    .withMessage('Description must be less than 500 characters')
-], (req, res) => {
+app.post('/products', (req, res) => {
+  // Manual validation instead of express-validator
+  const { name, price, description } = req.body;
+  const errors = [];
+
+  // Validate name
+  if (!name || typeof name !== 'string' || name.trim().length === 0) {
+    errors.push({
+      type: 'field',
+      msg: 'Product name is required',
+      path: 'name',
+      location: 'body'
+    });
+  } else if (name.length > 100) {
+    errors.push({
+      type: 'field',
+      msg: 'Product name must be less than 100 characters',
+      path: 'name',
+      location: 'body'
+    });
+  }
+
+  // Validate price
+  if (price !== undefined && (isNaN(price) || price < 0)) {
+    errors.push({
+      type: 'field',
+      msg: 'Price must be a non-negative number',
+      path: 'price',
+      location: 'body'
+    });
+  }
+
+  // Validate description
+  if (description && description.length > 500) {
+    errors.push({
+      type: 'field',
+      msg: 'Description must be less than 500 characters',
+      path: 'description',
+      location: 'body'
+    });
+  }
+
   // Check for validation errors
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
+  if (errors.length > 0) {
     logger.warn('Validation failed', {
-      errors: errors.array(),
+      errors: errors,
       remoteAddress: req.ip
     });
     return res.status(400).json({ 
       error: 'Validation failed',
-      errors: errors.array() 
+      errors: errors 
     });
   }
 
   // Process valid request
   logger.info('Product creation request', {
-    productName: req.body.name,
+    productName: name,
     remoteAddress: req.ip
   });
 
@@ -137,9 +165,9 @@ app.post('/products', [
   res.json({
     message: 'Product created successfully',
     product: {
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
+      name: name,
+      price: price,
+      description: description,
       createdAt: new Date()
     }
   });
