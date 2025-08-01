@@ -142,7 +142,6 @@ jobs:
           if [ -d "app-node" ]; then
             cd app-node
             echo "🧪 Running Node.js tests..."
-            echo "🧪 Running Node.js tests..."
             echo "✅ Application structure validation passed"
             echo "✅ Input validation tests passed"
             echo "✅ Rate limiting tests passed"
@@ -161,7 +160,6 @@ jobs:
             run: |
               if [ -d "app-go" ]; then
                 cd app-go
-                echo "🧪 Running Go tests..."
                 echo "🧪 Running Go tests..."
                 echo "✅ Application structure validation passed"
                 echo "✅ Health handler tests passed"
