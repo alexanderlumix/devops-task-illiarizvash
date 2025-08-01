@@ -18,8 +18,6 @@ import (
 	"go.uber.org/zap"
 )
 
-var logger *zap.Logger
-
 // Rate limiter structure
 type RateLimiter struct {
 	requests map[string][]time.Time

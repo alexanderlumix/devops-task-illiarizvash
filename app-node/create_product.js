@@ -2,6 +2,42 @@ const { MongoClient } = require('mongodb');
 const express = require('express');
 const winston = require('winston');
 const rateLimit = require('express-rate-limit');
+const prometheus = require('prom-client');
+
+// Initialize Prometheus metrics
+const register = new prometheus.Registry();
+prometheus.collectDefaultMetrics({ register });
+
+// Custom metrics
+const httpRequestDurationMicroseconds = new prometheus.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'status_code'],
+  buckets: [0.1, 0.5, 1, 2, 5]
+});
+
+const httpRequestsTotal = new prometheus.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status_code']
+});
+
+const productsCreated = new prometheus.Counter({
+  name: 'products_created_total',
+  help: 'Total number of products created'
+});
+
+const mongoOperations = new prometheus.Counter({
+  name: 'mongo_operations_total',
+  help: 'Total number of MongoDB operations',
+  labelNames: ['operation', 'status']
+});
+
+// Register metrics
+register.registerMetric(httpRequestDurationMicroseconds);
+register.registerMetric(httpRequestsTotal);
+register.registerMetric(productsCreated);
+register.registerMetric(mongoOperations);
 
 // Configure structured logging
 const logger = winston.createLogger({
@@ -82,6 +118,36 @@ app.use((req, res, next) => {
   next();
 });
 
+// Metrics middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const route = req.route ? req.route.path : req.path;
+    
+    httpRequestDurationMicroseconds
+      .labels(req.method, route, res.statusCode)
+      .observe(duration / 1000);
+    
+    httpRequestsTotal
+      .labels(req.method, route, res.statusCode)
+      .inc();
+  });
+  
+  next();
+});
+
+// Metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (err) {
+    res.status(500).end(err);
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   const healthData = {
@@ -160,6 +226,9 @@ app.post('/products', (req, res) => {
     productName: name,
     remoteAddress: req.ip
   });
+
+  // Track product creation metric
+  productsCreated.inc();
 
   // Here you would normally save to database
   res.json({
