@@ -1,245 +1,245 @@
-# Сводка по скриптам локальной разработки
+# Local Development Scripts Summary
 
-## Обзор
+## Overview
 
-Создана полная система автоматизации для локальной разработки проекта с учетом всех проблем, которые возникли в процессе настройки.
+A complete automation system has been created for local project development, taking into account all the problems that arose during the setup process.
 
-## 📁 Структура папки `local-development`
+## 📁 `local-development` Folder Structure
 
 ```
 local-development/
-├── setup.sh          # Установка и инициализация окружения
-├── teardown.sh       # Очистка окружения
-├── status.sh         # Проверка статуса системы
-├── README.md         # Подробная документация
-└── SCRIPTS_SUMMARY.md # Эта сводка
+├── setup.sh          # Environment installation and initialization
+├── teardown.sh       # Environment cleanup
+├── status.sh         # System status check
+├── README.md         # Detailed documentation
+└── SCRIPTS_SUMMARY.md # This summary
 ```
 
-## 🛠️ Скрипты
+## 🛠️ Scripts
 
-### 1. `setup.sh` - Автоматическая установка
+### 1. `setup.sh` - Automatic Installation
 
-**Назначение:** Полная автоматизация установки и настройки локального окружения
+**Purpose:** Complete automation of local environment installation and setup
 
-**Ключевые возможности:**
-- ✅ Проверка и установка всех зависимостей (Docker, Docker Compose, Go, Node.js)
-- ✅ Автоматическая настройка переменных окружения
-- ✅ Установка зависимостей приложений
-- ✅ Создание MongoDB ключа с правильными правами доступа
-- ✅ Запуск проекта через Docker Compose
-- ✅ Инициализация MongoDB replica set
-- ✅ Тестирование приложений и health checks
-- ✅ Цветной вывод с подробным логированием
+**Key Features:**
+- ✅ Check and install all dependencies (Docker, Docker Compose, Go, Node.js)
+- ✅ Automatic environment variable configuration
+- ✅ Install application dependencies
+- ✅ Create MongoDB key with proper access permissions
+- ✅ Start project via Docker Compose
+- ✅ Initialize MongoDB replica set
+- ✅ Test applications and health checks
+- ✅ Colored output with detailed logging
 
-**Решенные проблемы:**
-- Проблемы с установкой Docker Compose
-- Проблемы с версией MongoDB (AVX)
-- Проблемы с правами доступа к MongoDB ключу
-- Проблемы с аутентификацией в приложениях
-- Проблемы с health checks (curl → wget)
+**Solved Issues:**
+- Docker Compose installation issues
+- MongoDB version issues (AVX)
+- MongoDB key access permission issues
+- Application authentication issues
+- Health checks issues (curl → wget)
 
-**Использование:**
+**Usage:**
 ```bash
-# Базовая установка
+# Basic installation
 ./local-development/setup.sh
 
-# Пропустить установку зависимостей
+# Skip dependency installation
 ./local-development/setup.sh --skip-deps
 
-# Пропустить инициализацию MongoDB
+# Skip MongoDB initialization
 ./local-development/setup.sh --skip-mongo
 
-# Принудительная переустановка
+# Force reinstallation
 ./local-development/setup.sh --force
 ```
 
-### 2. `teardown.sh` - Очистка окружения
+### 2. `teardown.sh` - Environment Cleanup
 
-**Назначение:** Полная очистка локального окружения проекта
+**Purpose:** Complete cleanup of local project environment
 
-**Ключевые возможности:**
-- ✅ Остановка и удаление всех контейнеров проекта
-- ✅ Удаление Docker образов, volumes и сетей
-- ✅ Очистка Docker системы
-- ✅ Удаление локальных файлов (.env, MongoDB ключ)
-- ✅ Очистка логов
-- ✅ Полная очистка Docker данных (опционально)
-- ✅ Проверка очистки
+**Key Features:**
+- ✅ Stop and remove all project containers
+- ✅ Remove Docker images, volumes and networks
+- ✅ Clean Docker system
+- ✅ Remove local files (.env, MongoDB key)
+- ✅ Clean logs
+- ✅ Complete Docker data cleanup (optional)
+- ✅ Verify cleanup results
 
-**Безопасность:**
-- Запрос подтверждения перед удалением
-- Возможность принудительной очистки
-- Проверка результатов очистки
+**Security:**
+- Confirmation prompt before deletion
+- Force cleanup option
+- Cleanup result verification
 
-**Использование:**
+**Usage:**
 ```bash
-# Обычная очистка с подтверждением
+# Normal cleanup with confirmation
 ./local-development/teardown.sh
 
-# Принудительная очистка
+# Force cleanup
 ./local-development/teardown.sh --force
 
-# Полная очистка Docker данных
+# Complete Docker data cleanup
 ./local-development/teardown.sh --full
 ```
 
-### 3. `status.sh` - Проверка статуса
+### 3. `status.sh` - Status Check
 
-**Назначение:** Быстрая и подробная проверка статуса локального окружения
+**Purpose:** Quick and detailed status check of local environment
 
-**Ключевые возможности:**
-- ✅ Проверка всех компонентов системы
-- ✅ Проверка health checks приложений
-- ✅ Проверка MongoDB replica set
-- ✅ Проверка файлов и зависимостей
-- ✅ Проверка логов и ресурсов
-- ✅ Финальная сводка с подсчетом работающих компонентов
-- ✅ Три режима проверки (быстрая, полная, подробная)
+**Key Features:**
+- ✅ Check all system components
+- ✅ Check application health checks
+- ✅ Check MongoDB replica set
+- ✅ Check files and dependencies
+- ✅ Check logs and resources
+- ✅ Final summary with working component count
+- ✅ Three check modes (quick, complete, detailed)
 
-**Режимы работы:**
-- `--quick` - Быстрая проверка основных компонентов
-- `--verbose` - Подробная проверка с логами и ресурсами
-- Без параметров - Полная проверка
+**Operation Modes:**
+- `--quick` - Quick check of main components
+- `--verbose` - Detailed check with logs and resources
+- No parameters - Complete check
 
-**Использование:**
+**Usage:**
 ```bash
-# Быстрая проверка
+# Quick check
 ./local-development/status.sh --quick
 
-# Полная проверка
+# Complete check
 ./local-development/status.sh
 
-# Подробная проверка
+# Detailed check
 ./local-development/status.sh --verbose
 ```
 
-## 🎯 Решенные проблемы
+## 🎯 Solved Issues
 
-### Проблемы с установкой:
-1. **Docker Compose** - Автоматическая установка актуальной версии
-2. **Go** - Установка через snap для актуальной версии
-3. **Node.js** - Установка Node.js 18.x
-4. **Python зависимости** - Автоматическая установка из requirements.txt
+### Installation Issues:
+1. **Docker Compose** - Automatic installation of current version
+2. **Go** - Installation via snap for current version
+3. **Node.js** - Installation of Node.js 18.x
+4. **Python dependencies** - Automatic installation from requirements.txt
 
-### Проблемы с MongoDB:
-1. **AVX проблема** - Использование MongoDB 4.4 вместо 6.0
-2. **Права доступа** - Автоматическое создание ключа с правильными правами
-3. **Replica set** - Автоматическая инициализация
-4. **Аутентификация** - Убрана для упрощения разработки
+### MongoDB Issues:
+1. **AVX issue** - Using MongoDB 4.4 instead of 6.0
+2. **Access permissions** - Automatic key creation with proper permissions
+3. **Replica set** - Automatic initialization
+4. **Authentication** - Removed for development simplicity
 
-### Проблемы с приложениями:
-1. **Health checks** - Замена curl на wget
-2. **Переменные окружения** - Автоматическая настройка
-3. **Подключения к MongoDB** - Исправление URI
-4. **Зависимости** - Автоматическая установка
+### Application Issues:
+1. **Health checks** - Replacing curl with wget
+2. **Environment variables** - Automatic configuration
+3. **MongoDB connections** - URI fixes
+4. **Dependencies** - Automatic installation
 
-### Проблемы с Docker:
-1. **Сети** - Автоматическое создание и очистка
-2. **Volumes** - Управление данными
-3. **Образы** - Очистка неиспользуемых ресурсов
+### Docker Issues:
+1. **Networks** - Automatic creation and cleanup
+2. **Volumes** - Data management
+3. **Images** - Cleanup of unused resources
 
-## 🚀 Преимущества
+## 🚀 Advantages
 
-### Автоматизация:
-- Полная автоматизация установки
-- Идемпотентность (можно запускать многократно)
-- Обработка ошибок и восстановление
+### Automation:
+- Complete installation automation
+- Idempotency (can be run multiple times)
+- Error handling and recovery
 
-### Безопасность:
-- Проверка прав доступа
-- Подтверждение перед удалением
-- Изоляция проекта
+### Security:
+- Access permission checks
+- Confirmation before deletion
+- Project isolation
 
-### Удобство:
-- Цветной вывод с подробным логированием
-- Различные режимы работы
-- Подробная документация
+### Convenience:
+- Colored output with detailed logging
+- Various operation modes
+- Detailed documentation
 
-### Надежность:
-- Проверка всех компонентов
-- Тестирование функциональности
-- Валидация результатов
+### Reliability:
+- Check all components
+- Functionality testing
+- Result validation
 
-## 📋 Использование в команде
+## 📋 Team Usage
 
-### Для новых разработчиков:
+### For new developers:
 ```bash
-# Клонировать проект
+# Clone project
 git clone <repository>
 cd devops-task-illiarizvash
 
-# Установить окружение
+# Install environment
 ./local-development/setup.sh
 
-# Проверить статус
+# Check status
 ./local-development/status.sh --quick
 ```
 
-### Для ежедневной работы:
+### For daily work:
 ```bash
-# Проверить статус
+# Check status
 ./local-development/status.sh
 
-# Перезапустить проект
+# Restart project
 ./local-development/teardown.sh
 ./local-development/setup.sh
 
-# Очистить для экономии места
+# Clean for space saving
 ./local-development/teardown.sh --force
 ```
 
-### Для отладки:
+### For debugging:
 ```bash
-# Подробная проверка
+# Detailed check
 ./local-development/status.sh --verbose
 
-# Проверить логи
+# Check logs
 docker logs app-node
 docker logs app-go
 ```
 
-## 🔧 Алиасы для удобства
+## 🔧 Aliases for Convenience
 
-Добавьте в `~/.bashrc`:
+Add to `~/.bashrc`:
 ```bash
 alias dev-setup="./local-development/setup.sh"
 alias dev-clean="./local-development/teardown.sh"
 alias dev-status="./local-development/status.sh"
 ```
 
-Использование:
+Usage:
 ```bash
-dev-setup      # Установка
-dev-status     # Проверка статуса
-dev-clean      # Очистка
+dev-setup      # Installation
+dev-status     # Status check
+dev-clean      # Cleanup
 ```
 
-## 📊 Метрики успеха
+## 📊 Success Metrics
 
-### Критерии успешной установки:
-- ✅ Все контейнеры запущены и здоровы
-- ✅ MongoDB replica set инициализирован
-- ✅ Приложения отвечают на health checks
-- ✅ Логи показывают успешную работу
-- ✅ Нет ошибок в выводе
+### Successful Installation Criteria:
+- ✅ All containers running and healthy
+- ✅ MongoDB replica set initialized
+- ✅ Applications responding to health checks
+- ✅ Logs showing successful operation
+- ✅ No errors in output
 
-### Время установки:
-- Первая установка: ~10-15 минут
-- Повторная установка: ~5-7 минут
-- Очистка: ~2-3 минуты
+### Installation Time:
+- First installation: ~10-15 minutes
+- Reinstallation: ~5-7 minutes
+- Cleanup: ~2-3 minutes
 
-### Ресурсы:
-- Минимальные требования: 4GB RAM, 10GB свободного места
-- Рекомендуемые: 8GB RAM, 20GB свободного места
+### Resources:
+- Minimum requirements: 4GB RAM, 10GB free space
+- Recommended: 8GB RAM, 20GB free space
 
-## 🎉 Заключение
+## 🎉 Conclusion
 
-Созданная система автоматизации решает все проблемы, которые возникли в процессе локальной настройки проекта:
+The created automation system solves all the problems that arose during local project setup:
 
-1. **Полная автоматизация** - от установки зависимостей до запуска приложений
-2. **Надежность** - обработка всех известных проблем
-3. **Удобство** - простые команды для всех операций
-4. **Безопасность** - проверки и подтверждения
-5. **Документация** - подробные инструкции и примеры
+1. **Complete automation** - from dependency installation to application startup
+2. **Reliability** - handling all known issues
+3. **Convenience** - simple commands for all operations
+4. **Security** - checks and confirmations
+5. **Documentation** - detailed instructions and examples
 
-Система готова для использования в команде и может быть легко адаптирована для других проектов. 
+The system is ready for team use and can be easily adapted for other projects. 

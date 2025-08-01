@@ -1,64 +1,64 @@
-# Конкретные задачи для решения критических проблем
+# Specific Tasks for Solving Critical Issues
 
-## 🚨 Критические проблемы безопасности
+## 🚨 Critical Security Issues
 
 ### 1. Hardcoded Credentials
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 2-4 часа
+**Priority**: 🔴 CRITICAL
+**Time**: 2-4 hours
 
-#### Задачи:
-- [ ] Создать .env.example с примером конфигурации
-- [ ] Обновить app-go/read_products.go для использования environment variables
-- [ ] Обновить app-node/create_product.js для использования environment variables
-- [ ] Обновить scripts/create_app_user.py для использования environment variables
-- [ ] Протестировать с новыми переменными окружения
+#### Tasks:
+- [ ] Create .env.example with configuration example
+- [ ] Update app-go/read_products.go to use environment variables
+- [ ] Update app-node/create_product.js to use environment variables
+- [ ] Update scripts/create_app_user.py to use environment variables
+- [ ] Test with new environment variables
 
-#### Код для изменения:
+#### Code to change:
 ```go
 // app-go/read_products.go
-// Заменить строку 18:
+// Replace line 18:
 // uri = "mongodb://appuser:appuserpassword@127.0.0.1:27034/appdb?replicaSet=rs0"
-// На:
+// With:
 uri = fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?replicaSet=rs0",
     os.Getenv("MONGO_USER"), os.Getenv("MONGO_PASSWORD"),
     os.Getenv("MONGO_HOST"), os.Getenv("MONGO_PORT"), os.Getenv("MONGO_DB"))
 ```
 
 ### 2. Secret Management
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 1-2 дня
+**Priority**: 🔴 CRITICAL
+**Time**: 1-2 days
 
-#### Задачи:
-- [ ] Настроить AWS Secrets Manager или HashiCorp Vault
-- [ ] Создать IAM roles для доступа к секретам
-- [ ] Обновить приложения для получения секретов из vault
-- [ ] Настроить ротацию паролей
-- [ ] Добавить мониторинг доступа к секретам
+#### Tasks:
+- [ ] Set up AWS Secrets Manager or HashiCorp Vault
+- [ ] Create IAM roles for secret access
+- [ ] Update applications to retrieve secrets from vault
+- [ ] Configure password rotation
+- [ ] Add secret access monitoring
 
-### 3. .env файлы
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 1-2 часа
+### 3. .env files
+**Priority**: 🔴 CRITICAL
+**Time**: 1-2 hours
 
-#### Задачи:
-- [ ] Создать .env.example с полной конфигурацией
-- [ ] Добавить .env в .gitignore (уже сделано)
-- [ ] Документировать процесс setup в README.md
-- [ ] Создать скрипт для автоматической генерации .env
+#### Tasks:
+- [ ] Create .env.example with complete configuration
+- [ ] Add .env to .gitignore (already done)
+- [ ] Document setup process in README.md
+- [ ] Create script for automatic .env generation
 
-## 🔧 Критические проблемы инфраструктуры
+## 🔧 Critical Infrastructure Issues
 
-### 4. Docker Compose в корне
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 4-6 часов
+### 4. Docker Compose in Root
+**Priority**: 🔴 CRITICAL
+**Time**: 4-6 hours
 
-#### Задачи:
-- [ ] Создать docker-compose.yml в корне проекта
-- [ ] Объединить все сервисы (mongo-0,1,2, haproxy, app-go, app-node)
-- [ ] Настроить networks между сервисами
-- [ ] Добавить environment variables
-- [ ] Протестировать полный запуск: `docker-compose up -d`
+#### Tasks:
+- [ ] Create docker-compose.yml in project root
+- [ ] Combine all services (mongo-0,1,2, haproxy, app-go, app-node)
+- [ ] Configure networks between services
+- [ ] Add environment variables
+- [ ] Test complete startup: `docker-compose up -d`
 
-#### Структура:
+#### Structure:
 ```yaml
 version: '3.8'
 services:
@@ -71,41 +71,41 @@ services:
 ```
 
 ### 5. Health Checks
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 3-4 часа
+**Priority**: 🔴 CRITICAL
+**Time**: 3-4 hours
 
-#### Задачи:
-- [ ] Добавить health check endpoint в Go приложение
-- [ ] Добавить health check endpoint в Node.js приложение
-- [ ] Обновить Dockerfile для health checks
-- [ ] Настроить readiness/liveness probes
-- [ ] Добавить мониторинг состояния сервисов
+#### Tasks:
+- [ ] Add health check endpoint to Go application
+- [ ] Add health check endpoint to Node.js application
+- [ ] Update Dockerfile for health checks
+- [ ] Configure readiness/liveness probes
+- [ ] Add service state monitoring
 
 ### 6. Structured Logging
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 2-3 часа
+**Priority**: 🔴 CRITICAL
+**Time**: 2-3 hours
 
-#### Задачи:
-- [ ] Установить zap для Go приложения
-- [ ] Установить winston для Node.js приложения
-- [ ] Настроить log levels (DEBUG, INFO, WARN, ERROR)
-- [ ] Добавить structured logging с JSON форматом
-- [ ] Настроить log aggregation (ELK stack или аналоги)
+#### Tasks:
+- [ ] Install zap for Go application
+- [ ] Install winston for Node.js application
+- [ ] Configure log levels (DEBUG, INFO, WARN, ERROR)
+- [ ] Add structured logging with JSON format
+- [ ] Configure log aggregation (ELK stack or similar)
 
-## 🧪 Критические проблемы качества кода
+## 🧪 Critical Code Quality Issues
 
 ### 7. Unit Tests
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 1-2 дня
+**Priority**: 🔴 CRITICAL
+**Time**: 1-2 days
 
-#### Задачи:
-- [ ] Создать тесты для Go приложения (read_products.go)
-- [ ] Создать тесты для Node.js приложения (create_product.js)
-- [ ] Создать тесты для Python скриптов
-- [ ] Настроить test database
-- [ ] Добавить test coverage reporting
+#### Tasks:
+- [ ] Create tests for Go application (read_products.go)
+- [ ] Create tests for Node.js application (create_product.js)
+- [ ] Create tests for Python scripts
+- [ ] Set up test database
+- [ ] Add test coverage reporting
 
-#### Пример тестов:
+#### Test examples:
 ```go
 // Go tests
 func TestMongoDBConnection(t *testing.T)
@@ -114,139 +114,139 @@ func TestProductValidation(t *testing.T)
 ```
 
 ### 8. Error Handling
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 2-3 часа
+**Priority**: 🔴 CRITICAL
+**Time**: 2-3 hours
 
-#### Задачи:
-- [ ] Добавить retry механизм для подключения к БД
-- [ ] Добавить graceful shutdown
-- [ ] Улучшить error messages
-- [ ] Добавить error logging
-- [ ] Настроить error monitoring
+#### Tasks:
+- [ ] Add retry mechanism for DB connection
+- [ ] Add graceful shutdown
+- [ ] Improve error messages
+- [ ] Add error logging
+- [ ] Configure error monitoring
 
 ### 9. CI/CD Pipeline
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 1-2 дня
+**Priority**: 🔴 CRITICAL
+**Time**: 1-2 days
 
-#### Задачи:
-- [ ] Настроить GitHub Actions для автоматического build
-- [ ] Добавить Docker image building
-- [ ] Настроить automated testing
-- [ ] Добавить security scanning
-- [ ] Настроить deployment automation
+#### Tasks:
+- [ ] Set up GitHub Actions for automatic build
+- [ ] Add Docker image building
+- [ ] Configure automated testing
+- [ ] Add security scanning
+- [ ] Configure deployment automation
 
-## 📚 Критические проблемы документации
+## 📚 Critical Documentation Issues
 
 ### 10. README.md
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 2-3 часа
+**Priority**: 🔴 CRITICAL
+**Time**: 2-3 hours
 
-#### Задачи:
-- [ ] Создать подробный README.md
-- [ ] Добавить setup instructions
-- [ ] Описать архитектуру проекта
-- [ ] Добавить troubleshooting section
-- [ ] Добавить API documentation
+#### Tasks:
+- [ ] Create detailed README.md
+- [ ] Add setup instructions
+- [ ] Describe project architecture
+- [ ] Add troubleshooting section
+- [ ] Add API documentation
 
 ### 11. Architecture Documentation
-**Приоритет**: 🔴 КРИТИЧНО
-**Время**: 3-4 часа
+**Priority**: 🔴 CRITICAL
+**Time**: 3-4 hours
 
-#### Задачи:
-- [ ] Создать архитектурные диаграммы
-- [ ] Описать компоненты системы
-- [ ] Документировать API endpoints
-- [ ] Описать data flow
-- [ ] Добавить deployment diagrams
+#### Tasks:
+- [ ] Create architectural diagrams
+- [ ] Describe system components
+- [ ] Document API endpoints
+- [ ] Describe data flow
+- [ ] Add deployment diagrams
 
-## 🔒 Дополнительные проблемы безопасности
+## 🔒 Additional Security Issues
 
 ### 12. Input Validation
-**Приоритет**: 🟡 ВАЖНО
-**Время**: 2-3 часа
+**Priority**: 🟡 IMPORTANT
+**Time**: 2-3 hours
 
-#### Задачи:
-- [ ] Добавить validation для Go приложения
-- [ ] Добавить validation для Node.js приложения
-- [ ] Настроить request sanitization
-- [ ] Добавить rate limiting
-- [ ] Настроить CORS
+#### Tasks:
+- [ ] Add validation for Go application
+- [ ] Add validation for Node.js application
+- [ ] Configure request sanitization
+- [ ] Add rate limiting
+- [ ] Configure CORS
 
 ### 13. Rate Limiting
-**Приоритет**: 🟡 ВАЖНО
-**Время**: 1-2 часа
+**Priority**: 🟡 IMPORTANT
+**Time**: 1-2 hours
 
-#### Задачи:
-- [ ] Добавить rate limiting middleware
-- [ ] Настроить API throttling
-- [ ] Добавить monitoring для suspicious activity
-- [ ] Настроить alerts для DDoS attacks
+#### Tasks:
+- [ ] Add rate limiting middleware
+- [ ] Configure API throttling
+- [ ] Add monitoring for suspicious activity
+- [ ] Configure alerts for DDoS attacks
 
-## 📊 План выполнения
+## 📊 Implementation Plan
 
-### День 1: Безопасность
-- [ ] Заменить hardcoded credentials (2-4 часа)
-- [ ] Создать .env.example (1 час)
-- [ ] Настроить pre-commit hooks (1 час)
+### Day 1: Security
+- [ ] Replace hardcoded credentials (2-4 hours)
+- [ ] Create .env.example (1 hour)
+- [ ] Set up pre-commit hooks (1 hour)
 
-### День 2: Инфраструктура
-- [ ] Создать docker-compose.yml в корне (4-6 часов)
-- [ ] Добавить health checks (3-4 часа)
+### Day 2: Infrastructure
+- [ ] Create docker-compose.yml in root (4-6 hours)
+- [ ] Add health checks (3-4 hours)
 
-### День 3: Качество кода
-- [ ] Добавить error handling (2-3 часа)
-- [ ] Начать написание тестов (4-6 часов)
+### Day 3: Code Quality
+- [ ] Add error handling (2-3 hours)
+- [ ] Start writing tests (4-6 hours)
 
-### День 4: Тестирование
-- [ ] Завершить unit tests (4-6 часов)
-- [ ] Настроить CI/CD pipeline (4-6 часов)
+### Day 4: Testing
+- [ ] Complete unit tests (4-6 hours)
+- [ ] Set up CI/CD pipeline (4-6 hours)
 
-### День 5: Документация
-- [ ] Создать README.md (2-3 часа)
-- [ ] Написать архитектурную документацию (3-4 часа)
+### Day 5: Documentation
+- [ ] Create README.md (2-3 hours)
+- [ ] Write architectural documentation (3-4 hours)
 
-## 🎯 Критерии успеха
+## 🎯 Success Criteria
 
-### Безопасность
-- [ ] 0 hardcoded credentials в коде
-- [ ] Все секреты в environment variables
-- [ ] Pre-commit hooks проходят
-- [ ] Security scans не находят уязвимостей
+### Security
+- [ ] 0 hardcoded credentials in code
+- [ ] All secrets in environment variables
+- [ ] Pre-commit hooks pass
+- [ ] Security scans find no vulnerabilities
 
-### Инфраструктура
-- [ ] `docker-compose up` запускает весь проект
-- [ ] Health checks работают для всех сервисов
-- [ ] Structured logging настроен
-- [ ] Мониторинг активен
+### Infrastructure
+- [ ] `docker-compose up` starts entire project
+- [ ] Health checks work for all services
+- [ ] Structured logging configured
+- [ ] Monitoring active
 
-### Качество кода
+### Code Quality
 - [ ] >80% code coverage
-- [ ] Все ошибки обрабатываются
-- [ ] CI/CD pipeline проходит
-- [ ] Тесты проходят автоматически
+- [ ] All errors handled
+- [ ] CI/CD pipeline passes
+- [ ] Tests pass automatically
 
-### Документация
-- [ ] README.md содержит полные инструкции
-- [ ] Архитектурная документация создана
-- [ ] API документация готова
-- [ ] Troubleshooting guide добавлен
+### Documentation
+- [ ] README.md contains complete instructions
+- [ ] Architectural documentation created
+- [ ] API documentation ready
+- [ ] Troubleshooting guide added
 
-## 🚀 Следующие шаги
+## 🚀 Next Steps
 
-### Немедленно (сегодня)
-1. Заменить hardcoded credentials в коде
-2. Создать .env.example
-3. Добавить error handling
+### Immediately (today)
+1. Replace hardcoded credentials in code
+2. Create .env.example
+3. Add error handling
 
-### На этой неделе
-1. Создать docker-compose.yml в корне
-2. Добавить health checks
-3. Написать базовые тесты
-4. Настроить CI/CD pipeline
+### This week
+1. Create docker-compose.yml in root
+2. Add health checks
+3. Write basic tests
+4. Set up CI/CD pipeline
 
-### В течение месяца
-1. Полная документация
+### Within a month
+1. Complete documentation
 2. Secret management
 3. Input validation
 4. Rate limiting
-5. Мониторинг и alerting 
+5. Monitoring and alerting 

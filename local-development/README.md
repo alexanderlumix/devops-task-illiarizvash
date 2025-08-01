@@ -1,190 +1,190 @@
-# Локальная разработка
+# Local Development
 
-Эта папка содержит скрипты для автоматизации локальной настройки и очистки окружения проекта.
+This folder contains scripts for automating local setup and cleanup of the project environment.
 
-## Скрипты
+## Scripts
 
-### 📦 `setup.sh` - Установка и инициализация
+### 📦 `setup.sh` - Installation and Initialization
 
-Автоматический скрипт для установки и настройки локального окружения проекта.
+Automatic script for installing and configuring the local project environment.
 
-#### Возможности:
-- ✅ Проверка и установка Docker и Docker Compose
-- ✅ Проверка и установка Go и Node.js
-- ✅ Установка Python зависимостей
-- ✅ Настройка переменных окружения
-- ✅ Установка зависимостей приложений
-- ✅ Создание MongoDB ключа
-- ✅ Запуск проекта через Docker Compose
-- ✅ Инициализация MongoDB replica set
-- ✅ Тестирование приложений
-- ✅ Проверка health checks
+#### Features:
+- ✅ Check and install Docker and Docker Compose
+- ✅ Check and install Go and Node.js
+- ✅ Install Python dependencies
+- ✅ Configure environment variables
+- ✅ Install application dependencies
+- ✅ Create MongoDB key
+- ✅ Start project via Docker Compose
+- ✅ Initialize MongoDB replica set
+- ✅ Test applications
+- ✅ Check health checks
 
-#### Использование:
+#### Usage:
 
 ```bash
-# Базовая установка
+# Basic installation
 ./local-development/setup.sh
 
-# Пропустить установку зависимостей
+# Skip dependency installation
 ./local-development/setup.sh --skip-deps
 
-# Пропустить инициализацию MongoDB
+# Skip MongoDB initialization
 ./local-development/setup.sh --skip-mongo
 
-# Принудительная переустановка
+# Force reinstallation
 ./local-development/setup.sh --force
 
-# Показать справку
+# Show help
 ./local-development/setup.sh --help
 ```
 
-#### Что делает скрипт:
+#### What the script does:
 
-1. **Проверка окружения**
-   - Проверяет наличие Docker, Docker Compose, Go, Node.js
-   - Устанавливает недостающие компоненты
+1. **Environment Check**
+   - Checks for Docker, Docker Compose, Go, Node.js
+   - Installs missing components
 
-2. **Настройка проекта**
-   - Создает файл `.env` из `env.example`
-   - Устанавливает зависимости приложений
-   - Создает MongoDB ключ
+2. **Project Setup**
+   - Creates `.env` file from `env.example`
+   - Installs application dependencies
+   - Creates MongoDB key
 
-3. **Запуск системы**
-   - Останавливает существующие контейнеры
-   - Запускает проект через Docker Compose
-   - Инициализирует MongoDB replica set
+3. **System Startup**
+   - Stops existing containers
+   - Starts project via Docker Compose
+   - Initializes MongoDB replica set
 
-4. **Тестирование**
-   - Проверяет health checks приложений
-   - Тестирует подключения к MongoDB
-   - Выводит статус системы
+4. **Testing**
+   - Checks application health checks
+   - Tests MongoDB connections
+   - Outputs system status
 
-### 🧹 `teardown.sh` - Очистка окружения
+### 🧹 `teardown.sh` - Environment Cleanup
 
-Скрипт для полной очистки локального окружения проекта.
+Script for complete cleanup of the local project environment.
 
-### 📊 `status.sh` - Проверка статуса
+### 📊 `status.sh` - Status Check
 
-Скрипт для быстрой проверки статуса локального окружения проекта.
+Script for quick status check of the local project environment.
 
-#### Возможности:
-- ✅ Остановка и удаление контейнеров
-- ✅ Удаление Docker образов
-- ✅ Удаление Docker volumes
-- ✅ Удаление Docker сетей
-- ✅ Очистка Docker системы
-- ✅ Удаление локальных файлов
-- ✅ Очистка логов
-- ✅ Полная очистка Docker данных (опционально)
+#### Features:
+- ✅ Stop and remove containers
+- ✅ Remove Docker images
+- ✅ Remove Docker volumes
+- ✅ Remove Docker networks
+- ✅ Clean Docker system
+- ✅ Remove local files
+- ✅ Clean logs
+- ✅ Complete Docker data cleanup (optional)
 
-#### Использование:
+#### Usage:
 
 ```bash
-# Обычная очистка с подтверждением
+# Normal cleanup with confirmation
 ./local-development/teardown.sh
 
-# Принудительная очистка без подтверждения
+# Force cleanup without confirmation
 ./local-development/teardown.sh --force
 
-# Полная очистка (включая Docker данные)
+# Complete cleanup (including Docker data)
 ./local-development/teardown.sh --full
 
-# Показать справку
+# Show help
 ./local-development/teardown.sh --help
 ```
 
-#### Возможности:
-- ✅ Проверка Docker и Docker Compose
-- ✅ Проверка контейнеров и их статуса
-- ✅ Проверка MongoDB replica set
-- ✅ Проверка health checks приложений
-- ✅ Проверка файлов и зависимостей
-- ✅ Проверка логов и ресурсов
-- ✅ Финальная сводка статуса
+#### Features:
+- ✅ Check Docker and Docker Compose
+- ✅ Check containers and their status
+- ✅ Check MongoDB replica set
+- ✅ Check application health checks
+- ✅ Check files and dependencies
+- ✅ Check logs and resources
+- ✅ Final status summary
 
-#### Использование:
+#### Usage:
 
 ```bash
-# Полная проверка
+# Complete check
 ./local-development/status.sh
 
-# Быстрая проверка
+# Quick check
 ./local-development/status.sh --quick
 
-# Подробная проверка
+# Detailed check
 ./local-development/status.sh --verbose
 
-# Показать справку
+# Show help
 ./local-development/status.sh --help
 ```
 
-#### Что удаляет скрипт:
+#### What the script removes:
 
-1. **Docker ресурсы**
-   - Контейнеры проекта
-   - Образы проекта
-   - Volumes проекта
-   - Сети проекта
+1. **Docker Resources**
+   - Project containers
+   - Project images
+   - Project volumes
+   - Project networks
 
-2. **Локальные файлы**
-   - Файл `.env`
-   - MongoDB ключ
-   - `node_modules` (опционально)
-   - Go кэш (опционально)
+2. **Local Files**
+   - `.env` file
+   - MongoDB key
+   - `node_modules` (optional)
+   - Go cache (optional)
 
-3. **Системные ресурсы**
-   - Неиспользуемые Docker ресурсы
-   - Логи Docker
+3. **System Resources**
+   - Unused Docker resources
+   - Docker logs
 
-## Быстрый старт
+## Quick Start
 
-### Первая установка:
+### First Installation:
 
 ```bash
-# Сделать скрипты исполняемыми
+# Make scripts executable
 chmod +x local-development/setup.sh
 chmod +x local-development/teardown.sh
 
-# Запустить установку
+# Run installation
 ./local-development/setup.sh
 ```
 
-### Повторная установка:
+### Reinstallation:
 
 ```bash
-# Очистить окружение
+# Clean environment
 ./local-development/teardown.sh
 
-# Установить заново
+# Install again
 ./local-development/setup.sh
 ```
 
-### Проверка статуса:
+### Status Check:
 
 ```bash
-# Быстрая проверка
+# Quick check
 ./local-development/status.sh --quick
 
-# Полная проверка
+# Complete check
 ./local-development/status.sh
 
-# Проверить контейнеры
+# Check containers
 docker ps
 
-# Проверить логи
+# Check logs
 docker logs app-node
 docker logs app-go
 
-# Проверить MongoDB
+# Check MongoDB
 docker exec mongo-0 mongo --eval "rs.status()"
 ```
 
-## Решение проблем
+## Troubleshooting
 
-### Проблемы с установкой:
+### Installation Issues:
 
-1. **Docker не установлен**
+1. **Docker not installed**
    ```bash
    sudo apt update
    sudo apt install docker.io
@@ -192,120 +192,120 @@ docker exec mongo-0 mongo --eval "rs.status()"
    sudo usermod -aG docker $USER
    ```
 
-2. **Проблемы с правами**
+2. **Permission issues**
    ```bash
    sudo chown $USER:$USER -R .
    chmod +x local-development/*.sh
    ```
 
-3. **Проблемы с портами**
+3. **Port issues**
    ```bash
-   # Проверить занятые порты
+   # Check occupied ports
    sudo netstat -tlnp | grep -E "(3000|8080|27030|27031|27032)"
    ```
 
-### Проблемы с MongoDB:
+### MongoDB Issues:
 
-1. **Replica set не инициализируется**
+1. **Replica set not initializing**
    ```bash
    docker exec mongo-0 mongo --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongo-0:27017'}, {_id: 1, host: 'mongo-1:27017'}, {_id: 2, host: 'mongo-2:27017'}]})"
    ```
 
-2. **Проблемы с ключом**
+2. **Key issues**
    ```bash
    openssl rand -base64 756 > mongo/mongo-keyfile
    sudo chmod 400 mongo/mongo-keyfile
    ```
 
-### Проблемы с приложениями:
+### Application Issues:
 
-1. **Health checks не проходят**
+1. **Health checks failing**
    ```bash
-   # Проверить логи
+   # Check logs
    docker logs app-node --tail 20
    docker logs app-go --tail 20
    
-   # Перезапустить приложения
+   # Restart applications
    docker-compose restart app-node app-go
    ```
 
-2. **Проблемы с подключением к MongoDB**
+2. **MongoDB connection issues**
    ```bash
-   # Проверить переменные окружения
+   # Check environment variables
    docker exec app-node env | grep MONGO
    docker exec app-go env | grep MONGO
    ```
 
-## Логи и отладка
+## Logs and Debugging
 
-### Просмотр логов:
+### Viewing Logs:
 
 ```bash
-# Логи всех контейнеров
+# All container logs
 docker-compose logs
 
-# Логи конкретного контейнера
+# Specific container logs
 docker logs app-node
 docker logs app-go
 docker logs mongo-0
 
-# Логи с последними строками
+# Logs with last lines
 docker logs app-node --tail 50
 ```
 
-### Отладка:
+### Debugging:
 
 ```bash
-# Войти в контейнер
+# Enter container
 docker exec -it app-node bash
 docker exec -it app-go bash
 docker exec -it mongo-0 bash
 
-# Проверить процессы
+# Check processes
 docker exec app-node ps aux
 docker exec app-go ps aux
 ```
 
-## Автоматизация
+## Automation
 
-### Добавление в .bashrc:
+### Adding to .bashrc:
 
 ```bash
-# Добавить алиасы в ~/.bashrc
+# Add aliases to ~/.bashrc
 echo 'alias dev-setup="./local-development/setup.sh"' >> ~/.bashrc
 echo 'alias dev-clean="./local-development/teardown.sh"' >> ~/.bashrc
 echo 'alias dev-status="./local-development/status.sh"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### Использование алиасов:
+### Using Aliases:
 
 ```bash
-# Установка
+# Installation
 dev-setup
 
-# Очистка
+# Cleanup
 dev-clean
 
-# Очистка с подтверждением
+# Cleanup with confirmation
 dev-clean --force
 
-# Проверка статуса
+# Status check
 dev-status --quick
 ```
 
-## Безопасность
+## Security
 
-### Важные замечания:
+### Important Notes:
 
-1. **Скрипт setup.sh требует sudo для установки пакетов**
-2. **Скрипт teardown.sh удаляет все данные проекта**
-3. **Полная очистка (--full) удаляет все Docker данные**
-4. **Всегда делайте резервные копии перед очисткой**
+1. **setup.sh script requires sudo for package installation**
+2. **teardown.sh script removes all project data**
+3. **Complete cleanup (--full) removes all Docker data**
+4. **Always make backups before cleanup**
 
-### Рекомендации:
+### Recommendations:
 
-1. **Используйте виртуальную машину для разработки**
-2. **Регулярно делайте резервные копии важных данных**
-3. **Проверяйте логи перед очисткой**
-4. **Используйте --force только при необходимости** 
+1. **Use a virtual machine for development**
+2. **Regularly backup important data**
+3. **Check logs before cleanup**
+4. **Use --force only when necessary** 

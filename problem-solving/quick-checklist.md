@@ -1,142 +1,142 @@
-# Быстрый чек-лист критических проблем
+# Quick Checklist for Critical Issues
 
-## 🔴 КРИТИЧНО - Блокирует продакшн
+## 🔴 CRITICAL - Blocks Production
 
-### Безопасность
-- [ ] **Hardcoded credentials** - Заменить на environment variables
+### Security
+- [ ] **Hardcoded credentials** - Replace with environment variables
   - [ ] app-go/read_products.go:18
   - [ ] app-node/create_product.js:4
   - [ ] scripts/create_app_user.py:9,14
-- [ ] **Secret management** - Настроить централизованное управление
-- [ ] **.env files** - Создать примеры конфигурации
+- [ ] **Secret management** - Set up centralized management
+- [ ] **.env files** - Create configuration examples
 
-### Инфраструктура
-- [ ] **Docker Compose** - Создать единый файл запуска
-- [ ] **Health checks** - Добавить проверки состояния
-- [ ] **Logging** - Настроить структурированное логирование
+### Infrastructure
+- [ ] **Docker Compose** - Create unified startup file
+- [ ] **Health checks** - Add state verification
+- [ ] **Logging** - Configure structured logging
 
-### Качество кода
-- [ ] **Tests** - Добавить unit/integration тесты
-- [ ] **Error handling** - Улучшить обработку ошибок
-- [ ] **CI/CD** - Настроить автоматизацию
+### Code Quality
+- [ ] **Tests** - Add unit/integration tests
+- [ ] **Error handling** - Improve error handling
+- [ ] **CI/CD** - Set up automation
 
-### Документация
-- [ ] **README.md** - Создать подробную документацию
-- [ ] **Architecture docs** - Описать архитектуру системы
+### Documentation
+- [ ] **README.md** - Create detailed documentation
+- [ ] **Architecture docs** - Describe system architecture
 
-## 🟡 ВАЖНО - Влияет на качество
+## 🟡 IMPORTANT - Affects Quality
 
-### Дополнительная безопасность
-- [ ] **Input validation** - Добавить валидацию данных
-- [ ] **Rate limiting** - Настроить защиту от DDoS
+### Additional Security
+- [ ] **Input validation** - Add data validation
+- [ ] **Rate limiting** - Configure DDoS protection
 
-## 📊 Быстрая проверка
+## 📊 Quick Verification
 
-### Команды для проверки
+### Commands to check
 ```bash
-# 1. Проверить hardcoded credentials
+# 1. Check hardcoded credentials
 python3 scripts/check_passwords.py app-go/read_products.go app-node/create_product.js
 
-# 2. Проверить docker-compose
+# 2. Check docker-compose
 docker-compose up -d
 docker-compose ps
 
-# 3. Проверить health checks
+# 3. Check health checks
 curl http://localhost:8080/health  # Go app
 curl http://localhost:3000/health  # Node.js app
 
-# 4. Проверить тесты
+# 4. Check tests
 go test ./app-go/
-npm test  # в app-node/
+npm test  # in app-node/
 
-# 5. Проверить pre-commit hooks
+# 5. Check pre-commit hooks
 pre-commit run --all-files
 ```
 
-### Ожидаемые результаты
+### Expected Results
 - [ ] Password detection: ✅ No hardcoded passwords detected
 - [ ] Docker Compose: ✅ All services healthy
 - [ ] Health checks: ✅ 200 OK responses
 - [ ] Tests: ✅ All tests passing
 - [ ] Pre-commit: ✅ All hooks passed
 
-## 🚨 Критические файлы для изменения
+## 🚨 Critical Files to Change
 
-### Приоритет 1 (КРИТИЧНО)
-1. `app-go/read_products.go` - Заменить hardcoded URI
-2. `app-node/create_product.js` - Заменить hardcoded URI
-3. `scripts/create_app_user.py` - Заменить hardcoded passwords
-4. `docker-compose.yml` - Создать в корне проекта
+### Priority 1 (CRITICAL)
+1. `app-go/read_products.go` - Replace hardcoded URI
+2. `app-node/create_product.js` - Replace hardcoded URI
+3. `scripts/create_app_user.py` - Replace hardcoded passwords
+4. `docker-compose.yml` - Create in project root
 
-### Приоритет 2 (ВАЖНО)
-1. `README.md` - Создать подробную документацию
-2. `app-go/Dockerfile` - Добавить health checks
-3. `app-node/Dockerfile` - Добавить health checks
-4. `tests/` - Создать папку с тестами
+### Priority 2 (IMPORTANT)
+1. `README.md` - Create detailed documentation
+2. `app-go/Dockerfile` - Add health checks
+3. `app-node/Dockerfile` - Add health checks
+4. `tests/` - Create tests folder
 
-## ⏱️ Временные рамки
+## ⏱️ Timeframes
 
-### Сегодня (4-6 часов)
-- [ ] Заменить hardcoded credentials
-- [ ] Создать .env.example
-- [ ] Добавить error handling
+### Today (4-6 hours)
+- [ ] Replace hardcoded credentials
+- [ ] Create .env.example
+- [ ] Add error handling
 
-### На этой неделе (2-3 дня)
-- [ ] Создать docker-compose.yml в корне
-- [ ] Добавить health checks
-- [ ] Написать базовые тесты
-- [ ] Создать README.md
+### This week (2-3 days)
+- [ ] Create docker-compose.yml in root
+- [ ] Add health checks
+- [ ] Write basic tests
+- [ ] Create README.md
 
-### В течение месяца
-- [ ] Полная CI/CD pipeline
+### Within a month
+- [ ] Complete CI/CD pipeline
 - [ ] Secret management
 - [ ] Input validation
 - [ ] Rate limiting
-- [ ] Мониторинг
+- [ ] Monitoring
 
-## 🎯 Критерии готовности к продакшну
+## 🎯 Production Readiness Criteria
 
-### Безопасность
+### Security
 - [ ] 0 hardcoded credentials
-- [ ] Environment variables используются
-- [ ] Secret management настроен
-- [ ] Security scans проходят
+- [ ] Environment variables used
+- [ ] Secret management configured
+- [ ] Security scans pass
 
-### Инфраструктура
-- [ ] Один docker-compose запускает всё
-- [ ] Health checks работают
-- [ ] Logging настроен
-- [ ] Мониторинг активен
+### Infrastructure
+- [ ] One docker-compose starts everything
+- [ ] Health checks work
+- [ ] Logging configured
+- [ ] Monitoring active
 
-### Качество
-- [ ] Тесты проходят
-- [ ] CI/CD работает
-- [ ] Error handling есть
-- [ ] Документация готова
+### Quality
+- [ ] Tests pass
+- [ ] CI/CD works
+- [ ] Error handling exists
+- [ ] Documentation ready
 
-## 📝 Заметки
+## 📝 Notes
 
-### Команды для быстрого исправления
+### Commands for quick fixes
 ```bash
-# 1. Создать .env.example
+# 1. Create .env.example
 cp env.example .env.example
 
-# 2. Заменить credentials в коде
-# Использовать os.Getenv() в Go
-# Использовать process.env в Node.js
+# 2. Replace credentials in code
+# Use os.Getenv() in Go
+# Use process.env in Node.js
 
-# 3. Создать docker-compose.yml
-# Объединить все сервисы в один файл
+# 3. Create docker-compose.yml
+# Combine all services in one file
 
-# 4. Добавить health checks
-# /health endpoint в каждом приложении
+# 4. Add health checks
+# /health endpoint in each application
 
-# 5. Написать тесты
-# go test для Go
-# npm test для Node.js
+# 5. Write tests
+# go test for Go
+# npm test for Node.js
 ```
 
-### Полезные ссылки
+### Useful Links
 - [Pre-commit hooks](https://pre-commit.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 - [MongoDB Security](https://docs.mongodb.com/manual/security/)
