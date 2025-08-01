@@ -20,27 +20,16 @@ var logger *zap.Logger
 
 // getMongoURI constructs MongoDB connection URI from environment variables
 func getMongoURI() string {
-	user := os.Getenv("MONGO_USER")
-	password := os.Getenv("MONGO_PASSWORD")
 	host := os.Getenv("MONGO_HOST")
 	port := os.Getenv("MONGO_PORT")
 	db := os.Getenv("MONGO_DB")
 	replicaSet := os.Getenv("MONGO_REPLICA_SET")
 
-	if user == "" {
-		user = "appuser"
-	}
-	if password == "" {
-		password = os.Getenv("DEFAULT_APP_PASSWORD")
-		if password == "" {
-			logger.Fatal("MONGO_PASSWORD or DEFAULT_APP_PASSWORD environment variable must be set")
-		}
-	}
 	if host == "" {
-		host = "127.0.0.1"
+		host = "mongo-1"
 	}
 	if port == "" {
-		port = "27034"
+		port = "27017"
 	}
 	if db == "" {
 		db = "appdb"
@@ -49,7 +38,8 @@ func getMongoURI() string {
 		replicaSet = "rs0"
 	}
 
-	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?replicaSet=%s", user, password, host, port, db, replicaSet)
+	// Connect without authentication for development
+	uri := fmt.Sprintf("mongodb://%s:%s/%s?replicaSet=%s", host, port, db, replicaSet)
 	logger.Info("MongoDB URI constructed", 
 		zap.String("host", host),
 		zap.String("port", port),

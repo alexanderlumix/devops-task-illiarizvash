@@ -15,15 +15,13 @@ def test_connection(server):
     """Test connection to a MongoDB server"""
     host = server['host']
     port = server.get('port', 27017)
-    user = server['user']
-    password = server['password']
-    uri = f"mongodb://{user}:{password}@{host}:{port}/admin?directConnection=true"
+    uri = f"mongodb://{host}:{port}/admin?directConnection=true"
     try:
         client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
         client.admin.command('ping')
-        print(f"Connected to {host}:{port} as {user} successfully.")
+        print(f"Connected to {host}:{port} successfully.")
     except Exception as e:
-        print(f"Error connecting to {host}:{port} as {user}: {e}")
+        print(f"Error connecting to {host}:{port}: {e}")
     finally:
         client.close()
 
@@ -31,9 +29,7 @@ def init_primary(server):
     """Initialize replica set on the primary server"""
     host = server['host']
     port = server.get('port', 27017)
-    user = server['user']
-    password = server['password']
-    uri = f"mongodb://{user}:{password}@{host}:{port}/admin?directConnection=true"
+    uri = f"mongodb://{host}:{port}/admin?directConnection=true"
     try:
         client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
         
@@ -41,9 +37,9 @@ def init_primary(server):
         rs_config = {
             '_id': 'rs0',
             'members': [
-                {'_id': 0, 'host': '127.0.0.1:27030'},
-                {'_id': 1, 'host': '127.0.0.1:27031'},
-                {'_id': 2, 'host': '127.0.0.1:27032'},
+                {'_id': 0, 'host': 'mongo-0:27017'},
+                {'_id': 1, 'host': 'mongo-1:27017'},
+                {'_id': 2, 'host': 'mongo-2:27017'},
             ]
         }
         try:
@@ -52,7 +48,7 @@ def init_primary(server):
         except Exception as e:
             print(f"Replica set initiation error (may be already initiated): {e}")
     except Exception as e:
-        print(f"Error connecting to {host}:{port} as {user}: {e}")
+        print(f"Error connecting to {host}:{port}: {e}")
         exit(1)
     finally:
         client.close()

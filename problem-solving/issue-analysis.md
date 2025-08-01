@@ -15,14 +15,14 @@ uri = "mongodb://appuser:appuserpassword@127.0.0.1:27034/appdb?replicaSet=rs0"
 const uri = 'mongodb://appuser:appuserpassword@127.0.0.1:27032/appdb?directConnection=true';
 ```
 
-#### Риски
-- **Высокий**: Учетные данные в коде
-- **Средний**: Сложность ротации паролей
-- **Низкий**: Проблемы с разными окружениями
+#### Risks
+- **High**: Credentials in code
+- **Medium**: Password rotation complexity
+- **Low**: Issues with different environments
 
-#### Решение
+#### Solution
 ```go
-// Go решение
+// Go solution
 import (
     "os"
     "fmt"
@@ -41,29 +41,29 @@ func getMongoURI() string {
 ```
 
 ```javascript
-// Node.js решение
+// Node.js solution
 const mongoURI = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?replicaSet=rs0`;
 ```
 
-### 2. Отсутствие Secret Management - Детальный анализ
+### 2. Missing Secret Management - Detailed Analysis
 
-#### Текущее состояние
-- Нет централизованного управления секретами
-- Секреты хранятся в разных местах
-- Нет ротации паролей
+#### Current State
+- No centralized secret management
+- Secrets stored in different places
+- No password rotation
 
-#### Решение для разных окружений
+#### Solution for Different Environments
 
-**Development (локально)**
+**Development (locally)**
 ```bash
-# .env файл
+# .env file
 MONGO_USER=appuser
 MONGO_PASSWORD=appuserpassword
 MONGO_HOST=127.0.0.1
 MONGO_PORT=27017
 ```
 
-**Staging (тестовое окружение)**
+**Staging (test environment)**
 ```yaml
 # docker-compose.override.yml
 environment:
@@ -71,7 +71,7 @@ environment:
   - MONGO_PASSWORD=${STAGING_MONGO_PASSWORD}
 ```
 
-**Production (продакшн)**
+**Production (production)**
 ```yaml
 # Kubernetes secrets
 apiVersion: v1
@@ -84,14 +84,14 @@ data:
   password: <base64-encoded>
 ```
 
-### 3. Отсутствие .env файлов - Детальный анализ
+### 3. Missing .env Files - Detailed Analysis
 
-#### Текущее состояние
-- Нет примеров конфигурации
-- Разработчики не знают какие переменные нужны
-- Сложность локальной разработки
+#### Current State
+- No configuration examples
+- Developers don't know what variables are needed
+- Difficulty in local development
 
-#### Решение
+#### Solution
 ```bash
 # .env.example
 # MongoDB Configuration
@@ -112,18 +112,18 @@ JWT_SECRET=your_jwt_secret_here
 ENCRYPTION_KEY=your_encryption_key_here
 ```
 
-## 🔧 Анализ проблем инфраструктуры
+## 🔧 Infrastructure Issues Analysis
 
-### 4. Отсутствие docker-compose.yml в корне - Детальный анализ
+### 4. Missing docker-compose.yml in Root - Detailed Analysis
 
-#### Текущее состояние
-- Разрозненные docker-compose файлы
-- Сложность запуска всего проекта
-- Нет единой точки входа
+#### Current State
+- Scattered docker-compose files
+- Difficulty starting the entire project
+- No single entry point
 
-#### Решение
+#### Solution
 ```yaml
-# docker-compose.yml в корне
+# docker-compose.yml in root
 version: '3.8'
 
 services:
@@ -238,14 +238,14 @@ networks:
     driver: bridge
 ```
 
-### 5. Отсутствие health checks - Детальный анализ
+### 5. Missing Health Checks - Detailed Analysis
 
-#### Текущее состояние
-- Нет проверки состояния сервисов
-- Сложность диагностики проблем
-- Нет автоматического восстановления
+#### Current State
+- No service health checks
+- Difficulty diagnosing problems
+- No automatic recovery
 
-#### Решение для каждого сервиса
+#### Solution for Each Service
 
 **Go Application**
 ```go
@@ -264,7 +264,7 @@ type HealthResponse struct {
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
-    // Проверка подключения к БД
+    // Database connection check
     err := client.Ping(r.Context(), nil)
     dbStatus := "healthy"
     if err != nil {
@@ -290,7 +290,7 @@ const { MongoClient } = require('mongodb');
 
 app.get('/health', async (req, res) => {
     try {
-        // Проверка подключения к БД
+        // Database connection check
         await client.db().admin().ping();
         
         res.json({
@@ -309,16 +309,16 @@ app.get('/health', async (req, res) => {
 });
 ```
 
-### 6. Отсутствие logging - Детальный анализ
+### 6. Missing Logging - Detailed Analysis
 
-#### Текущее состояние
-- Простое логирование через log.Println
-- Нет структурированных логов
-- Сложность анализа проблем
+#### Current State
+- Simple logging via log.Println
+- No structured logs
+- Difficulty analyzing problems
 
-#### Решение
+#### Solution
 
-**Go Application (с zap)**
+**Go Application (with zap)**
 ```go
 package main
 
@@ -346,7 +346,7 @@ func main() {
         zap.String("environment", os.Getenv("GO_ENV")),
     )
     
-    // Логирование операций с БД
+    // Database operation logging
     logger.Info("Connecting to MongoDB",
         zap.String("host", mongoHost),
         zap.String("database", mongoDB),
@@ -354,7 +354,7 @@ func main() {
 }
 ```
 
-**Node.js Application (с winston)**
+**Node.js Application (with winston)**
 ```javascript
 const winston = require('winston');
 
@@ -379,16 +379,16 @@ if (process.env.NODE_ENV !== 'production') {
 }
 ```
 
-## 🧪 Анализ проблем качества кода
+## 🧪 Code Quality Issues Analysis
 
-### 7. Отсутствие тестов - Детальный анализ
+### 7. Missing Tests - Detailed Analysis
 
-#### Текущее состояние
-- Нет unit тестов
-- Нет integration тестов
-- Нет тестов производительности
+#### Current State
+- No unit tests
+- No integration tests
+- No performance tests
 
-#### Решение
+#### Solution
 
 **Go Tests**
 ```go
@@ -498,14 +498,14 @@ describe('Product Creation', () => {
 });
 ```
 
-### 8. Отсутствие error handling - Детальный анализ
+### 8. Missing Error Handling - Detailed Analysis
 
-#### Текущее состояние
-- Нет обработки ошибок подключения
-- Нет graceful shutdown
-- Нет retry механизмов
+#### Current State
+- No connection error handling
+- No graceful shutdown
+- No retry mechanisms
 
-#### Решение
+#### Solution
 
 **Go Error Handling**
 ```go
@@ -664,31 +664,31 @@ process.on('SIGTERM', async () => {
 });
 ```
 
-## 📊 Метрики и мониторинг
+## 📊 Metrics and Monitoring
 
-### Метрики для отслеживания
+### Metrics to Track
 
-**Безопасность**
-- Количество hardcoded credentials в коде
-- Время до обнаружения уязвимостей
-- Количество security incidents
+**Security**
+- Number of hardcoded credentials in code
+- Time to vulnerability discovery
+- Number of security incidents
 
-**Производительность**
-- Response time приложений
+**Performance**
+- Application response time
 - Database connection time
 - Memory usage
 
-**Надежность**
-- Uptime сервисов
+**Reliability**
+- Service uptime
 - Error rate
 - Recovery time
 
-**Качество кода**
+**Code Quality**
 - Code coverage
 - Number of bugs
 - Technical debt
 
-### Dashboard для мониторинга
+### Monitoring Dashboard
 
 ```yaml
 # Grafana dashboard configuration
@@ -705,28 +705,28 @@ providers:
       path: /var/lib/grafana/dashboards
 ```
 
-## 🎯 План реализации
+## 🎯 Implementation Plan
 
-### Неделя 1: Безопасность
-- [ ] Заменить все hardcoded credentials
-- [ ] Создать .env.example
-- [ ] Настроить pre-commit hooks
-- [ ] Добавить error handling
+### Week 1: Security
+- [ ] Replace all hardcoded credentials
+- [ ] Create .env.example
+- [ ] Set up pre-commit hooks
+- [ ] Add error handling
 
-### Неделя 2: Инфраструктура
-- [ ] Создать корневой docker-compose.yml
-- [ ] Добавить health checks
-- [ ] Настроить structured logging
-- [ ] Добавить monitoring
+### Week 2: Infrastructure
+- [ ] Create root docker-compose.yml
+- [ ] Add health checks
+- [ ] Set up structured logging
+- [ ] Add monitoring
 
-### Неделя 3: Качество
-- [ ] Написать unit тесты
-- [ ] Написать integration тесты
-- [ ] Настроить CI/CD pipeline
-- [ ] Добавить code coverage
+### Week 3: Quality
+- [ ] Write unit tests
+- [ ] Write integration tests
+- [ ] Set up CI/CD pipeline
+- [ ] Add code coverage
 
-### Неделя 4: Документация
-- [ ] Создать README.md
-- [ ] Написать архитектурную документацию
-- [ ] Создать API документацию
-- [ ] Добавить troubleshooting guide 
+### Week 4: Documentation
+- [ ] Create README.md
+- [ ] Write architectural documentation
+- [ ] Create API documentation
+- [ ] Add troubleshooting guide 

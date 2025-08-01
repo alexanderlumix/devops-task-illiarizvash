@@ -1,163 +1,163 @@
-# Problem Solving - Критические проблемы проекта
+# Problem Solving - Critical Project Issues
 
-## 📁 Структура папки
+## 📁 Folder Structure
 
 ### 1. `critical-issues-priority.md`
-**Описание**: Основной список критических проблем с приоритетами
-**Содержание**:
-- 13 критических проблем безопасности, инфраструктуры, качества кода
-- План решения по фазам (Phase 1-5)
-- Метрики успеха и чек-листы
-- Временные рамки для решения
+**Description**: Main list of critical issues with priorities
+**Content**:
+- 13 critical security, infrastructure, code quality issues
+- Solution plan by phases (Phase 1-5)
+- Success metrics and checklists
+- Timeframes for resolution
 
 ### 2. `issue-analysis.md`
-**Описание**: Детальный анализ каждой проблемы с конкретными решениями
-**Содержание**:
-- Подробный анализ каждой из 13 проблем
-- Конкретные примеры кода для исправления
-- Решения для разных окружений (dev/staging/prod)
-- Архитектурные решения и best practices
+**Description**: Detailed analysis of each issue with specific solutions
+**Content**:
+- Detailed analysis of each of the 13 issues
+- Specific code examples for fixes
+- Solutions for different environments (dev/staging/prod)
+- Architectural solutions and best practices
 
 ### 3. `action-items.md`
-**Описание**: Конкретные задачи для решения каждой проблемы
-**Содержание**:
-- Четкие задачи с временными рамками
-- Приоритеты (КРИТИЧНО/ВАЖНО)
-- Конкретные файлы для изменения
-- План выполнения по дням
+**Description**: Specific tasks for solving each issue
+**Content**:
+- Clear tasks with timeframes
+- Priorities (CRITICAL/IMPORTANT)
+- Specific files to modify
+- Execution plan by days
 
 ### 4. `quick-checklist.md`
-**Описание**: Быстрый чек-лист для валидации критических проблем
-**Содержание**:
-- Команды для быстрой проверки
-- Ожидаемые результаты
-- Критерии готовности к продакшну
-- Полезные ссылки и ресурсы
+**Description**: Quick checklist for validating critical issues
+**Content**:
+- Commands for quick verification
+- Expected results
+- Production readiness criteria
+- Useful links and resources
 
-## 🎯 Как использовать
+## 🎯 How to Use
 
-### Для разработчиков
-1. **Начните с** `quick-checklist.md` - быстрая проверка состояния
-2. **Изучите** `critical-issues-priority.md` - понимание проблем
-3. **Выполните** `action-items.md` - конкретные задачи
-4. **Используйте** `issue-analysis.md` - детальные решения
+### For Developers
+1. **Start with** `quick-checklist.md` - quick status check
+2. **Study** `critical-issues-priority.md` - understanding issues
+3. **Execute** `action-items.md` - specific tasks
+4. **Use** `issue-analysis.md` - detailed solutions
 
-### Для менеджеров
-1. **Обзор** `critical-issues-priority.md` - приоритеты и временные рамки
-2. **План** `action-items.md` - ресурсы и сроки
-3. **Метрики** - критерии успеха в каждом файле
+### For Managers
+1. **Review** `critical-issues-priority.md` - priorities and timeframes
+2. **Plan** `action-items.md` - resources and deadlines
+3. **Metrics** - success criteria in each file
 
-### Для DevOps
-1. **Инфраструктура** - docker-compose, health checks, logging
-2. **Безопасность** - secret management, credentials
+### For DevOps
+1. **Infrastructure** - docker-compose, health checks, logging
+2. **Security** - secret management, credentials
 3. **CI/CD** - pipeline, testing, deployment
 
-## 🚨 Критические проблемы (кратко)
+## 🚨 Critical Issues (summary)
 
-### Безопасность 🔴
-1. **Hardcoded credentials** - пароли в коде
-2. **Secret management** - нет централизованного управления
-3. **.env files** - нет примеров конфигурации
+### Security 🔴
+1. **Hardcoded credentials** - passwords in code
+2. **Secret management** - no centralized management
+3. **.env files** - no configuration examples
 
-### Инфраструктура 🔴
-4. **Docker Compose** - нет единого запуска
-5. **Health checks** - нет мониторинга состояния
-6. **Logging** - нет структурированного логирования
+### Infrastructure 🔴
+4. **Docker Compose** - no unified startup
+5. **Health checks** - no state monitoring
+6. **Logging** - no structured logging
 
-### Качество кода 🔴
-7. **Tests** - нет unit/integration тестов
-8. **Error handling** - нет обработки ошибок
-9. **CI/CD** - нет автоматизации
+### Code Quality 🔴
+7. **Tests** - no unit/integration tests
+8. **Error handling** - no error handling
+9. **CI/CD** - no automation
 
-### Документация 🔴
-10. **README.md** - нет инструкций
-11. **Architecture docs** - нет описания архитектуры
+### Documentation 🔴
+10. **README.md** - no instructions
+11. **Architecture docs** - no architecture description
 
-### Дополнительная безопасность 🟡
-12. **Input validation** - нет валидации данных
-13. **Rate limiting** - нет защиты от DDoS
+### Additional Security 🟡
+12. **Input validation** - no data validation
+13. **Rate limiting** - no DDoS protection
 
-## 📊 Статус решения
+## 📊 Resolution Status
 
-### Phase 1: Критическая безопасность (1-3 дня)
+### Phase 1: Critical Security (1-3 days)
 - [ ] Hardcoded credentials
 - [ ] Secret management
 - [ ] .env files
 
-### Phase 2: Инфраструктура (3-5 дней)
+### Phase 2: Infrastructure (3-5 days)
 - [ ] docker-compose.yml
 - [ ] Health checks
 - [ ] Logging
 
-### Phase 3: Качество кода (5-7 дней)
+### Phase 3: Code Quality (5-7 days)
 - [ ] Tests
 - [ ] Error handling
 - [ ] CI/CD
 
-### Phase 4: Документация (2-3 дня)
+### Phase 4: Documentation (2-3 days)
 - [ ] README.md
 - [ ] Architecture docs
 
-### Phase 5: Дополнительная безопасность (3-5 дней)
+### Phase 5: Additional Security (3-5 days)
 - [ ] Input validation
 - [ ] Rate limiting
 
-## 🎯 Критерии успеха
+## 🎯 Success Criteria
 
-### Безопасность
-- [ ] 0 hardcoded credentials в коде
-- [ ] Все секреты в environment variables
-- [ ] Настроен secret management
-- [ ] Security scans проходят
+### Security
+- [ ] 0 hardcoded credentials in code
+- [ ] All secrets in environment variables
+- [ ] Secret management configured
+- [ ] Security scans pass
 
-### Инфраструктура
-- [ ] Один docker-compose запускает весь проект
-- [ ] Health checks работают для всех сервисов
-- [ ] Структурированное логирование настроено
-- [ ] CI/CD pipeline проходит все тесты
+### Infrastructure
+- [ ] One docker-compose starts entire project
+- [ ] Health checks work for all services
+- [ ] Structured logging configured
+- [ ] CI/CD pipeline passes all tests
 
-### Качество кода
+### Code Quality
 - [ ] >80% code coverage
-- [ ] Все ошибки обрабатываются
-- [ ] Pre-commit hooks проходят
-- [ ] Security scans не находят уязвимостей
+- [ ] All errors handled
+- [ ] Pre-commit hooks pass
+- [ ] Security scans find no vulnerabilities
 
-### Документация
-- [ ] README.md содержит полные инструкции
-- [ ] Архитектурная документация создана
-- [ ] API документация готова
-- [ ] Troubleshooting guide добавлен
+### Documentation
+- [ ] README.md contains complete instructions
+- [ ] Architectural documentation created
+- [ ] API documentation ready
+- [ ] Troubleshooting guide added
 
-## 📝 Быстрые команды
+## 📝 Quick Commands
 
 ```bash
-# Проверить hardcoded credentials
+# Check for hardcoded credentials
 python3 scripts/check_passwords.py app-go/read_products.go
 
-# Запустить весь проект
+# Start entire project
 docker-compose up -d
 
-# Проверить health checks
+# Check health checks
 curl http://localhost:8080/health
 
-# Запустить тесты
+# Run tests
 go test ./app-go/
 npm test
 
-# Проверить pre-commit hooks
+# Check pre-commit hooks
 pre-commit run --all-files
 ```
 
-## 🔄 Обновления
+## 🔄 Updates
 
-- **Дата создания**: 2024-08-01
-- **Последнее обновление**: 2024-08-01
-- **Статус**: Активный анализ проблем
-- **Следующий обзор**: Еженедельно
+- **Creation date**: 2024-08-01
+- **Last update**: 2024-08-01
+- **Status**: Active issue analysis
+- **Next review**: Weekly
 
-## 📞 Поддержка
+## 📞 Support
 
-При возникновении вопросов или проблем:
-1. Проверьте `quick-checklist.md` для быстрого решения
-2. Изучите `issue-analysis.md` для детального понимания
-3. Следуйте `action-items.md` для пошагового решения 
+If you have questions or issues:
+1. Check `quick-checklist.md` for quick resolution
+2. Study `issue-analysis.md` for detailed understanding
+3. Follow `action-items.md` for step-by-step solution 

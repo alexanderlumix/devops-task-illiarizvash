@@ -41,21 +41,19 @@ const limiter = rateLimit({
 
 // getMongoURI constructs MongoDB connection URI from environment variables
 function getMongoURI() {
-  const user = process.env.MONGO_USER || 'appuser';
-  const password = process.env.MONGO_PASSWORD || 'appuserpassword';
-  const host = process.env.MONGO_HOST || '127.0.0.1';
-  const port = process.env.MONGO_PORT || '27032';
+  const host = process.env.MONGO_HOST || 'mongo-1';
+  const port = process.env.MONGO_PORT || '27017';
   const db = process.env.MONGO_DB || 'appdb';
   const directConnection = process.env.MONGO_DIRECT_CONNECTION || 'true';
 
-  const uri = `mongodb://${user}:${password}@${host}:${port}/${db}?directConnection=${directConnection}`;
+  // Connect without authentication for development
+  const uri = `mongodb://${host}:${port}/${db}?directConnection=${directConnection}`;
   
   logger.info('MongoDB URI constructed', {
     host,
     port,
     database: db,
-    directConnection,
-    user
+    directConnection
   });
 
   return uri;
