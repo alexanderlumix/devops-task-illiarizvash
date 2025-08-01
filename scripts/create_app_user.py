@@ -31,7 +31,7 @@ def create_app_user():
     # Connect to MongoDB using admin credentials
     uri = (
         f"mongodb://{ADMIN_USER}:{ADMIN_PASS}@{MONGO_HOST}:{MONGO_PORT}"
-        "/admin?replicaSet=rs0&authSource=admin"
+        "/admin?directConnection=true&authSource=admin"
     )
     client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
     db = client[APP_DB]

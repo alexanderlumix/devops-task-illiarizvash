@@ -8,12 +8,9 @@ services:
     command: mongod --replSet rs0 --bind_ip_all --port 27017
     ports:
       - "27030:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongo-0
-      - MONGO_INITDB_ROOT_PASSWORD=mongo-0
+    environment: []
     volumes:
       - mongo_data_0:/data/db
-      - ./mongo/mongo-keyfile:/etc/mongo-keyfile
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -26,12 +23,9 @@ services:
     command: mongod --replSet rs0 --bind_ip_all --port 27017
     ports:
       - "27031:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongo-1
-      - MONGO_INITDB_ROOT_PASSWORD=mongo-1
+    environment: []
     volumes:
       - mongo_data_1:/data/db
-      - ./mongo/mongo-keyfile:/etc/mongo-keyfile
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -44,12 +38,9 @@ services:
     command: mongod --replSet rs0 --bind_ip_all --port 27017
     ports:
       - "27032:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongo-2
-      - MONGO_INITDB_ROOT_PASSWORD=mongo-2
+    environment: []
     volumes:
       - mongo_data_2:/data/db
-      - ./mongo/mongo-keyfile:/etc/mongo-keyfile
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -81,7 +72,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - MONGO_HOST=haproxy
+      - MONGO_HOST=mongo-2
       - MONGO_PORT=27017
       - MONGO_DB=appdb
       - MONGO_REPLICA_SET=rs0
