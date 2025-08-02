@@ -21,10 +21,10 @@ def test_connection(server):
     """Test connection to a MongoDB server"""
     host = server["host"]
     port = server.get("port", 27017)
-    
+
     # For now, connect without authentication
     uri = f"mongodb://{host}:{port}/admin?directConnection=true"
-    
+
     try:
         client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
         client.admin.command("ping")
@@ -42,10 +42,10 @@ def init_primary(server):
     """Initialize replica set on the primary server"""
     host = server["host"]
     port = server.get("port", 27017)
-    
+
     # For now, connect without authentication
     uri = f"mongodb://{host}:{port}/admin?directConnection=true"
-    
+
     try:
         client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
 
