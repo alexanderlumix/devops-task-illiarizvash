@@ -1,61 +1,89 @@
-# init_mongo_servers.py
-import pymongo
-import yaml
+#!/usr/bin/env python3
+"""
+MongoDB Replica Set Initialization Script
+This script initializes MongoDB replica set configuration.
+"""
 import sys
 
-CONFIG_FILE = 'mongo_servers.yml'
+import pymongo
+import yaml
+
+CONFIG_FILE = "mongo_servers.yml"
+
 
 def load_config(config_file):
-    with open(config_file, 'r') as f:
+    """Load MongoDB server configuration from YAML file"""
+    with open(config_file, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
+
 def test_connection(server):
-    host = server['host']
-    port = server.get('port', 27017)
-    user = server['user']
-    password = server['password']
-    uri = f"mongodb://{user}:{password}@{host}:{port}/admin?directConnection=true"
+    """Test connection to a MongoDB server"""
+    host = server["host"]
+    port = server.get("port", 27017)
+
+    # For now, connect without authentication
+    uri = f"mongodb://{host}:{port}/admin?directConnection=true"
+
     try:
         client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
-        client.admin.command('ping')
-        print(f"Connected to {host}:{port} as {user} successfully.")
-    except Exception as e:
-        print(f"Error connecting to {host}:{port} as {user}: {e}")
+        client.admin.command("ping")
+        print(f"Connected to {host}:{port} successfully.")
+    except (
+        pymongo.errors.ConnectionFailure,
+        pymongo.errors.ServerSelectionTimeoutError,
+    ) as e:
+        print(f"Error connecting to {host}:{port}: {e}")
     finally:
         client.close()
+
 
 def init_primary(server):
-    host = server['host']
-    port = server.get('port', 27017)
-    user = server['user']
-    password = server['password']
-    uri = f"mongodb://{user}:{password}@{host}:{port}/admin?directConnection=true"
+    """Initialize replica set on the primary server"""
+    host = server["host"]
+    port = server.get("port", 27017)
+
+    # For now, connect without authentication
+    uri = f"mongodb://{host}:{port}/admin?directConnection=true"
+
     try:
         client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
+
+        # Configure replica set with three members
         rs_config = {
-            '_id': 'rs0',
-            'members': [
-                {'_id': 0, 'host': '127.0.0.1:27030'},
-                {'_id': 1, 'host': '127.0.0.1:27031'},
-                {'_id': 2, 'host': '127.0.0.1:27032'},
-            ]
+            "_id": "rs0",
+            "members": [
+                {"_id": 0, "host": "mongo-0:27017"},
+                {"_id": 1, "host": "mongo-1:27017"},
+                {"_id": 2, "host": "mongo-2:27017"},
+            ],
         }
         try:
-            client.admin.command('replSetInitiate', rs_config)
+            client.admin.command("replSetInitiate", rs_config)
             print(f"Replica set initiated on {host}:{port}.")
-        except Exception as e:
+        except pymongo.errors.OperationFailure as e:
             print(f"Replica set initiation error (may be already initiated): {e}")
-    except Exception as e:
-        print(f"Error connecting to {host}:{port} as {user}: {e}")
-        exit(1)
+    except (
+        pymongo.errors.ConnectionFailure,
+        pymongo.errors.ServerSelectionTimeoutError,
+    ) as e:
+        print(f"Error connecting to {host}:{port}: {e}")
+        sys.exit(1)
     finally:
         client.close()
 
-def main():
-    config = load_config(CONFIG_FILE)
-    for idx, server in enumerate(config['servers']):
-        test_connection(server)
-    init_primary(config['servers'][0])
 
-if __name__ == '__main__':
+def main():
+    """Main function to test connections and initialize replica set"""
+    config = load_config(CONFIG_FILE)
+
+    # Test connections to all servers
+    for server in config["servers"]:
+        test_connection(server)
+
+    # Initialize replica set on the first server (primary)
+    init_primary(config["servers"][0])
+
+
+if __name__ == "__main__":
     main()

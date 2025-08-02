@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # MongoDB Replica Set
+  mongo-0:
+    image: mongo:4.4
+    container_name: mongo-0
+    command: mongod --replSet rs0 --bind_ip_all --port 27017
+    ports:
+      - "27030:27017"
+    environment: []
+    volumes:
+      - mongo_data_0:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-1:
+    image: mongo:4.4
+    container_name: mongo-1
+    command: mongod --replSet rs0 --bind_ip_all --port 27017
+    ports:
+      - "27031:27017"
+    environment: []
+    volumes:
+      - mongo_data_1:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-2:
+    image: mongo:4.4
+    container_name: mongo-2
+    command: mongod --replSet rs0 --bind_ip_all --port 27017
+    ports:
+      - "27032:27017"
+    environment: []
+    volumes:
+      - mongo_data_2:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # HAProxy Load Balancer
+  haproxy:
+    image: haproxy:2.4
+    container_name: haproxy
+    ports:
+      - "27034:27017"
+    volumes:
+      - ./mongo/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - mongo-0
+      - mongo-1
+      - mongo-2
+    healthcheck:
+      test: ["CMD", "haproxy", "-c", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Go Application
+  app-go:
+    build: ./app-go
+    container_name: app-go
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_HOST=mongo-2
+      - MONGO_PORT=27017
+      - MONGO_DB=appdb
+      - MONGO_REPLICA_SET=rs0
+      - LOG_LEVEL=info
+    depends_on:
+      - haproxy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Node.js Application
+  app-node:
+    build: ./app-node
+    container_name: app-node
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_HOST=haproxy
+      - MONGO_PORT=27017
+      - MONGO_DB=appdb
+      - MONGO_REPLICA_SET=rs0
+      - LOG_LEVEL=info
+    depends_on:
+      - haproxy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mongo_data_0:
+  mongo_data_1:
+  mongo_data_2: 

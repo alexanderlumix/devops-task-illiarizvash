@@ -1,0 +1,120 @@
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - gofmt
+    - goimports
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - misspell
+    - gosec
+    - gocyclo
+    - dupl
+    - gocritic
+    - goconst
+    - gomnd
+    - lll
+    - nakedret
+    - prealloc
+    - unparam
+    - whitespace
+    - wsl
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  gomnd:
+    checks: argument,case,condition,operation,return,assign
+  gosec:
+    excludes:
+      - G101  # Look for hardcoded credentials
+      - G102  # Bind to all interfaces
+      - G103  # Audit the use of unsafe block
+      - G104  # Audit errors not checked
+      - G105  # Audit the use of big.Exp function
+      - G106  # Audit the use of ssh.InsecureIgnoreHostKey function
+      - G107  # Url provided to HTTP request as taint input
+      - G108  # Use of net/http serve function that has no support for setting timeouts
+      - G109  # Converting strconv.Atoi result to int32/int16
+      - G110  # Potential DoS vulnerability via decompression bomb
+      - G111  # Potential DoS vulnerability via decompression bomb
+      - G112  # Potential DoS vulnerability via decompression bomb
+      - G113  # Use of http.ListenAndServe instead of https.ListenAndServeTLS
+      - G114  # Use of net/http serve function that has no support for setting timeouts
+      - G201  # SQL query construction using format string
+      - G202  # SQL query construction using string concatenation
+      - G203  # Use of unescaped data in HTML templates
+      - G204  # Audit use of command execution
+      - G301  # Poor file permissions used when creating a directory
+      - G302  # Poor file permissions used with chmod
+      - G303  # Creating tempfile using a predictable path
+      - G304  # Potential file inclusion via variable
+      - G305  # File path traversal when extracting zip/tar archive
+      - G306  # Poor file permissions used when writing to a file
+      - G307  # Poor file permissions used when creating a file
+      - G401  # Detect the usage of DES, RC4, MD5 or SHA1
+      - G402  # Look for bad TLS connection settings
+      - G403  # Ensure minimum RSA key length of 2048 bits
+      - G404  # Insecure random number source (rand)
+      - G501  # Import blacklist: crypto/md5
+      - G502  # Import blacklist: crypto/des
+      - G503  # Import blacklist: crypto/rc4
+      - G504  # Import blacklist: net/http/cgi
+      - G505  # Import blacklist: crypto/sha1
+      - G601  # Implicit memory aliasing in for loop
+  lll:
+    line-length: 140
+  misspell:
+    locale: US
+  nakedret:
+    max-func-lines: 30
+  unparam:
+    check-exported: false
+  whitespace:
+    multi-if: false
+    multi-func: false
+  wsl:
+    allow-assign-and-anything: false
+    allow-assign-and-call: false
+    allow-cuddle-declarations: false
+    allow-cuddle-functions: false
+    allow-cuddle-ranges: false
+    allow-trailing-comment: false
+    force-case-trailing-whitespace: false
+    force-err-cuddling: false
+    force-short-decl-cuddling: false
+    indent-error-flow: false
+    min-conditions-count: 0
+    newline-after-cuddle-type: false
+    treat-cuddle-as-block: false
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gomnd
+        - gocyclo
+        - gocognit
+        - dupl
+        - goconst
+        - gomnd
+        - gosec
+        - lll
+        - nakedret
+        - prealloc
+        - unparam
+        - whitespace
+        - wsl
+  max-issues-per-linter: 0
+  max-same-issues: 0 

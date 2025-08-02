@@ -1,5 +1,11 @@
 **node_modules/
 **.env
+**passwords_and_credentials.txt
+**credentials.local.json
+**mongo/mongo-keyfile
+**credentials.json
+**secrets.json
+**local-secrets.json
 npm-debug.log
 .DS_Store
 *.local
